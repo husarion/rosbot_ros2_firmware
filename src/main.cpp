@@ -25,13 +25,13 @@ char imu_description_string[64] = "";
 
 static float curr_odom_calc_time = 0.0;
 static float last_odom_calc_time = 0.0;
+volatile uint8_t err_msg;
 
 sensor_msgs__msg__Imu imu_msg;
 sensor_msgs__msg__BatteryState battery_msg;
 sensor_msgs__msg__JointState wheels_state_msg;
 sensor_msgs__msg__Range range_msgs[RANGES_COUNT];
 std_msgs__msg__UInt16 button_msgs[BUTTONS_COUNT];
-
 
 static uint32_t spin_count = 1;
 
@@ -47,13 +47,35 @@ void range_sensors_msg_handler() {
     osEvent evt1 = distance_sensor_mail_box.get(0);
     if (evt1.status == osEventMail) {
         SensorsMeasurement *message = (SensorsMeasurement *)evt1.value.p;
+        if (message->status == MultiDistanceSensor::ERR_I2C_FAILURE) {
+            err_msg++;
+            if (distance_sensor_commands.empty() && err_msg == 3) {
+                uint8_t *data = distance_sensor_commands.alloc();
+                *data = 2;
+                distance_sensor_commands.put(data);
+                data = distance_sensor_commands.alloc();
+                *data = 1;
+                distance_sensor_commands.put(data);
+                err_msg = 0;
+            }
+
+        } else {
+            err_msg = 0;
+            for (auto i = 0u; i < RANGES_COUNT; ++i) {
+                range_msgs[i].range = message->range[i];
+            }
+        }
+        distance_sensor_mail_box.free(message);
+    }
+}
+
+void publish_range_sensors(rcl_timer_t *timer, int64_t last_call_time) {
+    RCLC_UNUSED(last_call_time);
+    if (timer != NULL) {
         for (auto i = 0u; i < RANGES_COUNT; ++i) {
             fill_range_msg(&range_msgs[i], i);
-            range_msgs[i].range = message->range[i];
             publish_range_msg(&range_msgs[i], i);
         }
-
-        distance_sensor_mail_box.free(message);
     }
 }
 
@@ -89,13 +111,13 @@ void battery_msg_handler() {
 }
 
 void button_msgs_handler() {
-    if(button1_publish_flag){
+    if (button1_publish_flag) {
         button_msgs[0].data = 1;
         button1_publish_flag = false;
         publish_button_msg(&button_msgs[0], 0);
     }
 
-    if(button2_publish_flag){
+    if (button2_publish_flag) {
         button_msgs[1].data = 1;
         button2_publish_flag = false;
         publish_button_msg(&button_msgs[1], 1);

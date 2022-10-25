@@ -5,6 +5,8 @@ rclc_support_t support;
 rcl_allocator_t rcl_allocator;
 rcl_node_t node;
 rcl_timer_t timer;
+rcl_timer_t range_timer;
+
 
 rcl_publisher_t imu_pub;
 rcl_publisher_t wheels_state_pub;
@@ -20,6 +22,7 @@ const char *buttons_pub_names[] = {"button/left", "button/right"};
 
 extern void timer_callback(rcl_timer_t *timer, int64_t last_call_time);
 extern void wheels_command_callback(const void *msgin);
+extern void publish_range_sensors(rcl_timer_t *timer, int64_t last_call_time);
 
 bool microros_init() {
     fill_wheels_command_msg(&wheels_command_msg);
@@ -37,9 +40,13 @@ bool microros_init() {
 
     RCCHECK(rclc_timer_init_default(&timer, &support, RCL_MS_TO_NS(10),
                                     timer_callback));
+    RCCHECK(rclc_timer_init_default(&range_timer, &support, RCL_MS_TO_NS( 200  ),
+                                    publish_range_sensors));
 
     RCCHECK(rclc_executor_init(&executor, &support.context, 5, &rcl_allocator));
     RCCHECK(rclc_executor_add_timer(&executor, &timer));
+    RCCHECK(rclc_executor_add_timer(&executor, &range_timer));
+
     RCCHECK(rclc_executor_add_subscription(&executor, &wheels_command_sub, &wheels_command_msg,
                                            &wheels_command_callback, ON_NEW_DATA));
 
@@ -230,7 +237,6 @@ void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
 
     msg->radiation_type = sensor_msgs__msg__Range__INFRARED;
     msg->field_of_view = 0.26;
-    msg->min_range = 0.03;
+    msg->min_range = 0.01;
     msg->max_range = 0.90;
-    msg->range = 0.0;
 }
