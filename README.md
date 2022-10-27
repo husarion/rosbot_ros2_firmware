@@ -9,7 +9,7 @@ ______  _____  _____  _             _           __
 | |\ \ \ \_/ //\__/ /| |_) || (_) || |_       | |   \ V  V /
 \_| \_| \___/ \____/ |_.__/  \___/  \__|      |_|    \_/\_/
 ```
-**Firmware version:** `0.1.0-ros2`
+**Firmware version:** `0.1.0`
 
 ## Prerequisites
 You need to install following tools:
@@ -129,6 +129,10 @@ The baudrate should be adjusted for SBC you use. The default value for this firm
 The easiest way to change the firmware is to work inside a devcontainer.
 In VSCode use option `Reopen in Container` from extention:
 - [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) (ms-vscode-remote.remote-containers)
+
+## Creating a release
+
+Release is created automatically after PR with bump command is merged to the master branch. Available bump commands are: `bump::major`, `bump::minor` and `bump::patch` (simply add them to the description of your PR).
 
 ## Versioning
 
