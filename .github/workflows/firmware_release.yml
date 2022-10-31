@@ -58,7 +58,7 @@ jobs:
       run: pip3 install -U platformio
 
     - name: Building a firmware for STM32
-      run: pio run
+      run: git submodule update --init --recursive && pio run
 
     - name: Release a firmware
       uses: softprops/action-gh-release@v1
