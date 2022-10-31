@@ -9,7 +9,7 @@ ______  _____  _____  _             _           __
 | |\ \ \ \_/ //\__/ /| |_) || (_) || |_       | |   \ V  V /
 \_| \_| \___/ \____/ |_.__/  \___/  \__|      |_|    \_/\_/
 ```
-**Firmware version:** `0.1.0`
+**Firmware version:** `0.1.2`
 
 ## Prerequisites
 You need to install following tools:
