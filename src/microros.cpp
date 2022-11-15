@@ -16,7 +16,7 @@ rcl_publisher_t buttons_pubs[BUTTONS_COUNT];
 
 rcl_subscription_t wheels_command_sub;
 std_msgs__msg__Float32MultiArray wheels_command_msg;
-const char *range_frame_names[] = {"range_right_front", "range_left_front", "range_right_rear", "range_left_rear"};
+const char *range_frame_names[] = {"fr_range", "fl_range", "rr_range", "rl_range"};
 const char *range_pub_names[] = {"range/right_front", "range/left_front", "range/right_rear", "range/left_rear"};
 const char *buttons_pub_names[] = {"button/left", "button/right"};
 

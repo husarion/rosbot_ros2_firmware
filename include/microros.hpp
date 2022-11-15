@@ -21,10 +21,10 @@ constexpr const char *WHEELS_STATE_TOPIC_NAME = "_motors_response";
 constexpr const char *BATTERY_TOPIC_NAME = "battery";
 constexpr const char *WHEELS_COMMAND_TOPIC_NAME = "_motors_cmd";
 
-constexpr const char *FRONT_LEFT_MOTOR_NAME = "front_left_wheel_joint";
-constexpr const char *FRONT_RIGHT_MOTOR_NAME = "front_right_wheel_joint";
-constexpr const char *REAR_LEFT_MOTOR_NAME = "rear_left_wheel_joint";
-constexpr const char *REAR_RIGHT_MOTOR_NAME = "rear_right_wheel_joint";
+constexpr const char *FRONT_LEFT_MOTOR_NAME = "fl_wheel_joint";
+constexpr const char *FRONT_RIGHT_MOTOR_NAME = "fr_wheel_joint";
+constexpr const char *REAR_LEFT_MOTOR_NAME = "rl_wheel_joint";
+constexpr const char *REAR_RIGHT_MOTOR_NAME = "rr_wheel_joint";
 
 enum Buttons{
     button_left,
