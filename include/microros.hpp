@@ -12,6 +12,8 @@
 #include <sensor_msgs/msg/joint_state.h>
 #include <sensor_msgs/msg/range.h>
 #include <std_msgs/msg/float32_multi_array.h>
+#include <std_msgs/msg/u_int32_multi_array.h>
+
 #include <std_msgs/msg/u_int16.h>
 #include <std_msgs/msg/bool.h>
 #include <microros_transport/mbed_serial_transport.hpp>
@@ -21,6 +23,7 @@ constexpr const char *IMU_TOPIC_NAME = "_imu/data_raw";
 constexpr const char *WHEELS_STATE_TOPIC_NAME = "_motors_response";
 constexpr const char *BATTERY_TOPIC_NAME = "battery";
 constexpr const char *WHEELS_COMMAND_TOPIC_NAME = "_motors_cmd";
+constexpr const char *SERVOS_COMMAND_TOPIC_NAME = "cmd_ser";
 
 constexpr const char *FRONT_LEFT_MOTOR_NAME = "front_left_wheel_joint";
 constexpr const char *FRONT_RIGHT_MOTOR_NAME = "front_right_wheel_joint";
@@ -53,6 +56,16 @@ enum Motors {
     motor_right_front,
     motor_left_front,
     MOTORS_COUNT
+};
+
+enum Servos{
+    servo1,
+    servo2,
+    servo3,
+    servo4,
+    servo5,
+    servo6,
+    SERVOS_COUNT
 };
 
 enum MotorsState {
@@ -101,6 +114,7 @@ bool init_wheels_state_publisher();
 bool init_battery_publisher();
 bool init_range_publishers();
 bool init_wheels_command_subscriber();
+bool init_servos_command_subscriber();
 bool init_button_publishers();
 bool init_led_subscribers();
 
@@ -108,6 +122,7 @@ void fill_wheels_state_msg(sensor_msgs__msg__JointState *msg);
 void fill_imu_msg(sensor_msgs__msg__Imu *msg);
 void fill_battery_msg(sensor_msgs__msg__BatteryState *msg);
 void fill_wheels_command_msg(std_msgs__msg__Float32MultiArray *msg);
+void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg);
 void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
 
 bool publish_imu_msg(sensor_msgs__msg__Imu *imu_msg);

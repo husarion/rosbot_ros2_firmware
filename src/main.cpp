@@ -191,14 +191,22 @@ void wheels_command_callback(const void *msgin) {
     }
 }
 
-void led1_callback(const void *msgin){
+void servos_command_callback(const void *msgin) {
+    const std_msgs__msg__UInt32MultiArray *msg = (const std_msgs__msg__UInt32MultiArray *)msgin;
+    if (not msg == NULL and msg->data.size == SERVOS_COUNT) {
+        for(auto i=0u; i< SERVOS_COUNT; ++i){
+            servo_manager.setWidth(i, msg->data.data[i]);
+        }
+    }
+}
+void led1_callback(const void *msgin) {
     const std_msgs__msg__Bool *msg = (const std_msgs__msg__Bool *)msgin;
     if (not msg == NULL) {
         led2 = msg->data;
     }
 }
 
-void led2_callback(const void *msgin){
+void led2_callback(const void *msgin) {
     const std_msgs__msg__Bool *msg = (const std_msgs__msg__Bool *)msgin;
     if (not msg == NULL) {
         led3 = msg->data;
@@ -235,6 +243,16 @@ int main() {
 
     RosbotDrive &drive = RosbotDrive::getInstance();
     MultiDistanceSensor &distance_sensors = MultiDistanceSensor::getInstance();
+
+    // Change to parameter server
+    for (auto i = 0u; i < 6; ++i) {
+        servo_manager.enableOutput(i, 1);
+        servo_manager.setPeriod(i, 20000);
+    }
+    servo_manager.enablePower(true);
+    servo_manager.setPowerMode(0);
+
+
 
     RosbotWheel custom_wheel_params = {
         .radius = WHEEL_RADIUS,
@@ -307,6 +325,7 @@ int main() {
     fill_imu_msg(&imu_msg);
     fill_battery_msg(&battery_msg);
     fill_wheels_state_msg(&wheels_state_msg);
+
     for (auto i = 0u; i < RANGES_COUNT; ++i) {
         fill_range_msg(&range_msgs[i], i);
     }

@@ -38,6 +38,7 @@ static DigitalOut sens_power(SENS_POWER_ON, 0);
 static InterruptIn button1(BUTTON1);
 static InterruptIn button2(BUTTON2);
 static ImuDriver *imu_driver_ptr;
+static rosbot_sensors::ServoManger servo_manager;
 
 // Motors setup
 #define MOTOR_FR MOTOR1

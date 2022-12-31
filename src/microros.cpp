@@ -15,9 +15,11 @@ rcl_publisher_t range_pubs[RANGES_COUNT];
 rcl_publisher_t buttons_pubs[BUTTONS_COUNT];
 
 rcl_subscription_t wheels_command_sub;
+rcl_subscription_t servos_command_sub;
 rcl_subscription_t led_subs[LED_COUNT];
 
 std_msgs__msg__Float32MultiArray wheels_command_msg;
+std_msgs__msg__UInt32MultiArray servos_command_msg;
 std_msgs__msg__Bool led_msg;
 
 const char *range_frame_names[] = {"range_right_front", "range_left_front", "range_right_rear", "range_left_rear"};
@@ -27,6 +29,7 @@ const char *led_subs_names[] = {"led/left", "led/right"};
 
 extern void timer_callback(rcl_timer_t *timer, int64_t last_call_time);
 extern void wheels_command_callback(const void *msgin);
+extern void servos_command_callback(const void *msgin);
 extern void led1_callback(const void *msgin);
 extern void led2_callback(const void *msgin);
 
@@ -34,10 +37,13 @@ extern void publish_range_sensors(rcl_timer_t *timer, int64_t last_call_time);
 
 bool microros_init() {
     fill_wheels_command_msg(&wheels_command_msg);
+    fill_servos_command_msg(&servos_command_msg);
+
     rcl_allocator = rcl_get_default_allocator();
     RCCHECK(rclc_support_init(&support, 0, NULL, &rcl_allocator));
     RCCHECK(rclc_node_init_default(&node, NODE_NAME, "", &support));
     if (not init_wheels_command_subscriber() or
+        not init_servos_command_subscriber() or
         not init_wheels_state_publisher() or
         not init_imu_publisher() or
         not init_battery_publisher() or
@@ -52,12 +58,14 @@ bool microros_init() {
     RCCHECK(rclc_timer_init_default(&range_timer, &support, RCL_MS_TO_NS( 200  ),
                                     publish_range_sensors));
 
-    RCCHECK(rclc_executor_init(&executor, &support.context, 5, &rcl_allocator));
+    RCCHECK(rclc_executor_init(&executor, &support.context, 7, &rcl_allocator));
     RCCHECK(rclc_executor_add_timer(&executor, &timer));
     RCCHECK(rclc_executor_add_timer(&executor, &range_timer));
 
     RCCHECK(rclc_executor_add_subscription(&executor, &wheels_command_sub, &wheels_command_msg,
                                            &wheels_command_callback, ON_NEW_DATA));
+    RCCHECK(rclc_executor_add_subscription(&executor, &servos_command_sub, &servos_command_msg,
+                                           &servos_command_callback, ON_NEW_DATA));
     RCCHECK(rclc_executor_add_subscription(&executor, &led_subs[0], &led_msg,
                                            &led1_callback, ON_NEW_DATA));
     RCCHECK(rclc_executor_add_subscription(&executor, &led_subs[1], &led_msg,
@@ -145,6 +153,13 @@ bool init_wheels_command_subscriber() {
     RCCHECK(rclc_subscription_init_best_effort(
         &wheels_command_sub, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
         WHEELS_COMMAND_TOPIC_NAME));
+    return true;
+}
+
+bool init_servos_command_subscriber(){
+    RCCHECK(rclc_subscription_init_best_effort(
+        &servos_command_sub, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt32MultiArray),
+        SERVOS_COMMAND_TOPIC_NAME));
     return true;
 }
 
@@ -247,6 +262,13 @@ void fill_wheels_command_msg(std_msgs__msg__Float32MultiArray *msg) {
     msg->data.capacity = MOTORS_COUNT;
     msg->data.size = 0;
     msg->data.data = (float *)data;
+}
+
+void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg) {
+    static uint32_t data[SERVOS_COUNT] = {0, 0, 0, 0, 0, 0};
+    msg->data.capacity = SERVOS_COUNT;
+    msg->data.size = 0;
+    msg->data.data = (uint32_t *)data;
 }
 
 void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
