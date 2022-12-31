@@ -174,10 +174,12 @@ void update_odometry() {
 
 void wheels_command_callback(const void *msgin) {
     const std_msgs__msg__Float32MultiArray *msg = (const std_msgs__msg__Float32MultiArray *)msgin;
-    if (not msg == NULL and msg->data.size == 4) {
+    if (not msg == NULL and msg->data.size == MOTORS_COUNT) {
         RosbotDrive &drive = RosbotDrive::getInstance();
         NewTargetSpeed new_speed;
         new_speed.mode = MPS;
+
+        // change order
         new_speed.speed[0] = msg->data.data[motor_right_front] * WHEEL_RADIUS;
         new_speed.speed[1] = msg->data.data[motor_right_rear] * WHEEL_RADIUS;
         new_speed.speed[2] = msg->data.data[motor_left_rear] * WHEEL_RADIUS;
@@ -186,6 +188,20 @@ void wheels_command_callback(const void *msgin) {
         drive.updateTargetSpeed(new_speed);
         last_speed_command_time = odom_watchdog_timer.read_ms();
         is_speed_watchdog_active = false;
+    }
+}
+
+void led1_callback(const void *msgin){
+    const std_msgs__msg__Bool *msg = (const std_msgs__msg__Bool *)msgin;
+    if (not msg == NULL) {
+        led2 = msg->data;
+    }
+}
+
+void led2_callback(const void *msgin){
+    const std_msgs__msg__Bool *msg = (const std_msgs__msg__Bool *)msgin;
+    if (not msg == NULL) {
+        led3 = msg->data;
     }
 }
 
@@ -201,7 +217,6 @@ void odometry_callback() {
 void timer_callback(rcl_timer_t *timer, int64_t last_call_time) {
     RCLC_UNUSED(last_call_time);
     if (timer != NULL) {
-        led3 = !led3;
         imu_msg_handler();
         wheels_state_msg_handler();
         button_msgs_handler();
@@ -242,7 +257,6 @@ int main() {
     bool distance_sensors_init_flag = false;
     bool imu_init_flag = false;
 
-    // TODO: add /diagnostic messages
     int num_sens_init;
     if ((num_sens_init = distance_sensors.init()) > 0) {
         distance_sensors_init_flag = true;
@@ -285,8 +299,6 @@ int main() {
 
     if (not microros_init()) {
         microros_deinit();
-        led2 = 1;
-        led3 = 1;
         ThisThread::sleep_for(2000);
 
         NVIC_SystemReset();
@@ -304,11 +316,8 @@ int main() {
     while (state == AGENT_CONNECTED) {
         EXECUTE_EVERY_N_MS(2000, state = (RMW_RET_OK == rmw_uros_ping_agent(200, 5)) ? AGENT_CONNECTED : AGENT_DISCONNECTED;);
         microros_spin();
-        led2 = 1;
     }
-    led3 = 0;
     for (int i = 0; i < 10; ++i) {
-        led2 = !led2;
         ThisThread::sleep_for(200);
     }
     microros_deinit();
