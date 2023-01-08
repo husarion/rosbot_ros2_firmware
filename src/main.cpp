@@ -31,7 +31,7 @@ sensor_msgs__msg__Imu imu_msg;
 sensor_msgs__msg__BatteryState battery_msg;
 sensor_msgs__msg__JointState wheels_state_msg;
 sensor_msgs__msg__Range range_msgs[RANGES_COUNT];
-std_msgs__msg__UInt16 button_msgs[BUTTONS_COUNT];
+std_msgs__msg__Bool button_msgs[BUTTONS_COUNT];
 
 static uint32_t spin_count = 1;
 

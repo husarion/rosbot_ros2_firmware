@@ -13,8 +13,6 @@
 #include <sensor_msgs/msg/range.h>
 #include <std_msgs/msg/float32_multi_array.h>
 #include <std_msgs/msg/u_int32_multi_array.h>
-
-#include <std_msgs/msg/u_int16.h>
 #include <std_msgs/msg/bool.h>
 #include <microros_transport/mbed_serial_transport.hpp>
 #include <rclc_parameter/rclc_parameter.h>
@@ -139,4 +137,4 @@ bool publish_imu_msg(sensor_msgs__msg__Imu *imu_msg);
 bool publish_wheels_state_msg(sensor_msgs__msg__JointState *msg);
 bool publish_battery_msg(sensor_msgs__msg__BatteryState *msg);
 bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
-bool publish_button_msg(std_msgs__msg__UInt16 *msg, uint8_t id);
+bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id);

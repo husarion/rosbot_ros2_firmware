@@ -155,7 +155,7 @@ bool init_button_publishers() {
         RCCHECK(rclc_publisher_init_best_effort(
             &buttons_pubs[i],
             &node,
-            ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
+            ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
             buttons_pub_names[i]));
     }
     return true;
@@ -233,7 +233,7 @@ bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
     return true;
 }
 
-bool publish_button_msg(std_msgs__msg__UInt16 *msg, uint8_t id) {
+bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id) {
     RCCHECK(rcl_publish(&buttons_pubs[id], msg, NULL));
     return true;
 }
