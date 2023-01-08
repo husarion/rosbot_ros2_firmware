@@ -81,21 +81,12 @@ enum AgentStates {
     AGENT_DISCONNECTED
 };
 
-struct Parameters{
-    bool servo_enable_power;
-    float servo_voltage;
-    bool servo_enabled[SERVOS_COUNT];
-    uint32_t servo_period[SERVOS_COUNT];
-};
-
 static DigitalOut led2(LED2, 0);
 static DigitalOut led3(LED3, 0);
 bool microros_deinit();
 
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){return false;}}
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){led3 = 1;}}
-
-
 
 #define EXECUTE_EVERY_N_MS(MS, X)          \
     do {                                   \

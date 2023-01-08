@@ -24,8 +24,6 @@ std_msgs__msg__Float32MultiArray wheels_command_msg;
 std_msgs__msg__UInt32MultiArray servos_command_msg;
 std_msgs__msg__Bool led_msg;
 
-Parameters microros_parameters;
-
 const char *range_frame_names[] = {"range_right_front", "range_left_front", "range_right_rear", "range_left_rear"};
 const char *range_pub_names[] = {"range/right_front", "range/left_front", "range/right_rear", "range/left_rear"};
 const char *buttons_pub_names[] = {"button/left", "button/right"};
@@ -39,7 +37,6 @@ extern void led2_callback(const void *msgin);
 
 extern void publish_range_sensors(rcl_timer_t *timer, int64_t last_call_time);
 extern bool on_parameter_changed(const Parameter * old_param, const Parameter * new_param, void * context);
-
 
 bool microros_init() {
     fill_wheels_command_msg(&wheels_command_msg);
