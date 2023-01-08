@@ -235,6 +235,36 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time) {
     }
 }
 
+bool on_parameter_changed(const Parameter * old_param, const Parameter * new_param, void * context)
+{
+    (void) context;
+    if (old_param == NULL && new_param == NULL) {
+        return false;
+    }
+    if(old_param != NULL and new_param != NULL){
+        std::map<double, uint8_t>::iterator it;
+        switch (old_param->value.type) {
+            case RCLC_PARAMETER_DOUBLE:
+                it = servo_voltage_configuration.find(new_param->value.double_value);
+                if (it != servo_voltage_configuration.end()){
+                    servo_manager.setPowerMode(it->second);
+                    led2 = 0;
+                }
+                else{
+                    led2 = 1;
+                }
+
+                break;
+            case RCLC_PARAMETER_BOOL:
+                servo_manager.enablePower(new_param->value.bool_value);
+            default:
+                break;
+        }
+    }
+
+  return true;
+}
+
 int main() {
     ThisThread::sleep_for(100);
     sens_power = 1;  // sensors power on
@@ -249,10 +279,6 @@ int main() {
         servo_manager.enableOutput(i, 1);
         servo_manager.setPeriod(i, 20000);
     }
-    servo_manager.enablePower(true);
-    servo_manager.setPowerMode(0);
-
-
 
     RosbotWheel custom_wheel_params = {
         .radius = WHEEL_RADIUS,

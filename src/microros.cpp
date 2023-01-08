@@ -18,9 +18,13 @@ rcl_subscription_t wheels_command_sub;
 rcl_subscription_t servos_command_sub;
 rcl_subscription_t led_subs[LED_COUNT];
 
+rclc_parameter_server_t param_server;
+
 std_msgs__msg__Float32MultiArray wheels_command_msg;
 std_msgs__msg__UInt32MultiArray servos_command_msg;
 std_msgs__msg__Bool led_msg;
+
+Parameters microros_parameters;
 
 const char *range_frame_names[] = {"range_right_front", "range_left_front", "range_right_rear", "range_left_rear"};
 const char *range_pub_names[] = {"range/right_front", "range/left_front", "range/right_rear", "range/left_rear"};
@@ -34,6 +38,8 @@ extern void led1_callback(const void *msgin);
 extern void led2_callback(const void *msgin);
 
 extern void publish_range_sensors(rcl_timer_t *timer, int64_t last_call_time);
+extern bool on_parameter_changed(const Parameter * old_param, const Parameter * new_param, void * context);
+
 
 bool microros_init() {
     fill_wheels_command_msg(&wheels_command_msg);
@@ -49,7 +55,9 @@ bool microros_init() {
         not init_battery_publisher() or
         not init_range_publishers() or
         not init_button_publishers() or
-        not init_led_subscribers()) {
+        not init_led_subscribers() or
+        not init_param_server() or
+        not init_parameters()) {
         return false;
     }
 
@@ -58,7 +66,7 @@ bool microros_init() {
     RCCHECK(rclc_timer_init_default(&range_timer, &support, RCL_MS_TO_NS( 200  ),
                                     publish_range_sensors));
 
-    RCCHECK(rclc_executor_init(&executor, &support.context, 7, &rcl_allocator));
+    RCCHECK(rclc_executor_init(&executor, &support.context, 12, &rcl_allocator));
     RCCHECK(rclc_executor_add_timer(&executor, &timer));
     RCCHECK(rclc_executor_add_timer(&executor, &range_timer));
 
@@ -70,6 +78,9 @@ bool microros_init() {
                                            &led1_callback, ON_NEW_DATA));
     RCCHECK(rclc_executor_add_subscription(&executor, &led_subs[1], &led_msg,
                                            &led2_callback, ON_NEW_DATA));
+    RCCHECK(rclc_executor_add_parameter_server(&executor, &param_server, on_parameter_changed));
+
+    RCCHECK(rclc_executor_prepare(&executor));
     RCCHECK(rmw_uros_sync_session(1000));
     return true;
 }
@@ -90,6 +101,7 @@ bool microros_deinit() {
         RCCHECK(rcl_publisher_fini(&buttons_pubs[i], &node));
     }
 
+    RCCHECK(rclc_parameter_server_fini(&param_server, &node));
     RCCHECK(rclc_executor_fini(&executor));
     RCCHECK(rcl_node_fini(&node));
     return true;
@@ -172,24 +184,51 @@ bool init_led_subscribers(){
     return true;
 }
 
+bool init_param_server(){
+    RCCHECK(rclc_parameter_server_init_default(&param_server, &node));
+    return true;
+}
+
+bool init_parameters(){
+    RCCHECK(rclc_add_parameter(&param_server, "servo_voltage", RCLC_PARAMETER_DOUBLE));
+    RCCHECK(rclc_parameter_set_double(&param_server, "servo_voltage", 5.0));
+
+    RCCHECK(rclc_add_parameter(&param_server, "servo_enable_power", RCLC_PARAMETER_BOOL));
+    RCCHECK(rclc_parameter_set_bool(&param_server, "servo_enable_power", false));
+
+    // char param_name[100] = "";
+    // for(auto i = 0u; i < SERVOS_COUNT; ++i){
+    //     sprintf(param_name, "servo%d_enable", i);
+    //     RCCHECK(rclc_add_parameter(&param_server, param_name, RCLC_PARAMETER_BOOL));
+    //     sprintf(param_name, "servo%d_peroid", i);
+    //     RCCHECK(rclc_add_parameter(&param_server, param_name, RCLC_PARAMETER_INT));
+    // }
+    return true;
+}
+
 bool publish_wheels_state_msg(sensor_msgs__msg__JointState *msg) {
     RCCHECK(rcl_publish(&wheels_state_pub, msg, NULL));
+    return true;
 }
 
 bool publish_imu_msg(sensor_msgs__msg__Imu *msg) {
     RCCHECK(rcl_publish(&imu_pub, msg, NULL));
+    return true;
 }
 
 bool publish_battery_msg(sensor_msgs__msg__BatteryState *msg) {
     RCCHECK(rcl_publish(&battery_pub, msg, NULL));
+    return true;
 }
 
 bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
     RCCHECK(rcl_publish(&range_pubs[id], msg, NULL));
+    return true;
 }
 
 bool publish_button_msg(std_msgs__msg__UInt16 *msg, uint8_t id) {
     RCCHECK(rcl_publish(&buttons_pubs[id], msg, NULL));
+    return true;
 }
 
 void fill_wheels_state_msg(sensor_msgs__msg__JointState *msg) {

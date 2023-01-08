@@ -4,6 +4,7 @@
 
 #include <memory_debug_message_info.hpp>
 #include <microros.hpp>
+#include <map>
 
 #ifndef KINEMATIC_TYPE
 #define KINEMATIC_TYPE 0
@@ -39,6 +40,13 @@ static InterruptIn button1(BUTTON1);
 static InterruptIn button2(BUTTON2);
 static ImuDriver *imu_driver_ptr;
 static rosbot_sensors::ServoManger servo_manager;
+
+std::map<double, uint8_t> servo_voltage_configuration{
+    {5.0, 0},
+    {6.0, 1},
+    {7.4, 2},
+    {8.6, 3}
+};
 
 // Motors setup
 #define MOTOR_FR MOTOR1

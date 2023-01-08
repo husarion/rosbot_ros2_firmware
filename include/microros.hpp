@@ -17,6 +17,7 @@
 #include <std_msgs/msg/u_int16.h>
 #include <std_msgs/msg/bool.h>
 #include <microros_transport/mbed_serial_transport.hpp>
+#include <rclc_parameter/rclc_parameter.h>
 
 constexpr const char *NODE_NAME = "rosbot_stm32_firmware";
 constexpr const char *IMU_TOPIC_NAME = "_imu/data_raw";
@@ -82,6 +83,13 @@ enum AgentStates {
     AGENT_DISCONNECTED
 };
 
+struct Parameters{
+    bool servo_enable_power;
+    float servo_voltage;
+    bool servo_enabled[SERVOS_COUNT];
+    uint32_t servo_period[SERVOS_COUNT];
+};
+
 static DigitalOut led2(LED2, 0);
 static DigitalOut led3(LED3, 0);
 bool microros_deinit();
@@ -117,6 +125,8 @@ bool init_wheels_command_subscriber();
 bool init_servos_command_subscriber();
 bool init_button_publishers();
 bool init_led_subscribers();
+bool init_param_server();
+bool init_parameters();
 
 void fill_wheels_state_msg(sensor_msgs__msg__JointState *msg);
 void fill_imu_msg(sensor_msgs__msg__Imu *msg);
