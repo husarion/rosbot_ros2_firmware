@@ -287,11 +287,6 @@ int main() {
     RosbotDrive &drive = RosbotDrive::getInstance();
     MultiDistanceSensor &distance_sensors = MultiDistanceSensor::getInstance();
 
-    // Change to parameter server
-    for (auto i = 0u; i < 6; ++i) {
-        servo_manager.setPeriod(i, 20000);
-    }
-
     RosbotWheel custom_wheel_params = {
         .radius = WHEEL_RADIUS,
         .diameter_modificator = DIAMETER_MODIFICATOR,
