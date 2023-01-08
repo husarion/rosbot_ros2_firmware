@@ -185,7 +185,11 @@ bool init_led_subscribers(){
 }
 
 bool init_param_server(){
-    RCCHECK(rclc_parameter_server_init_default(&param_server, &node));
+    const rclc_parameter_options_t options = {
+        .notify_changed_over_dds = true,
+        .max_params = 15
+    };
+    RCCHECK(rclc_parameter_server_init_with_option(&param_server, &node, &options));
     return true;
 }
 
@@ -195,14 +199,17 @@ bool init_parameters(){
 
     RCCHECK(rclc_add_parameter(&param_server, "servo_enable_power", RCLC_PARAMETER_BOOL));
     RCCHECK(rclc_parameter_set_bool(&param_server, "servo_enable_power", false));
+    constexpr int BUFF = 20;
+    char param_name[BUFF];
+    for(auto i = 0u; i < SERVOS_COUNT; ++i){
+        snprintf(param_name, BUFF, "servo%d_enable", i);
+        RCCHECK(rclc_add_parameter(&param_server, param_name, RCLC_PARAMETER_BOOL));
+        RCCHECK(rclc_parameter_set_bool(&param_server, param_name, false));
 
-    // char param_name[100] = "";
-    // for(auto i = 0u; i < SERVOS_COUNT; ++i){
-    //     sprintf(param_name, "servo%d_enable", i);
-    //     RCCHECK(rclc_add_parameter(&param_server, param_name, RCLC_PARAMETER_BOOL));
-    //     sprintf(param_name, "servo%d_peroid", i);
-    //     RCCHECK(rclc_add_parameter(&param_server, param_name, RCLC_PARAMETER_INT));
-    // }
+        snprintf(param_name, BUFF, "servo%d_period", i);
+        RCCHECK(rclc_add_parameter(&param_server, param_name, RCLC_PARAMETER_INT));
+        RCCHECK(rclc_parameter_set_int(&param_server, param_name, 0));
+    }
     return true;
 }
 

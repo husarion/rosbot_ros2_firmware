@@ -174,7 +174,7 @@ void update_odometry() {
 
 void wheels_command_callback(const void *msgin) {
     const std_msgs__msg__Float32MultiArray *msg = (const std_msgs__msg__Float32MultiArray *)msgin;
-    if (not msg == NULL and msg->data.size == MOTORS_COUNT) {
+    if (msg != NULL and msg->data.size == MOTORS_COUNT) {
         RosbotDrive &drive = RosbotDrive::getInstance();
         NewTargetSpeed new_speed;
         new_speed.mode = MPS;
@@ -193,7 +193,7 @@ void wheels_command_callback(const void *msgin) {
 
 void servos_command_callback(const void *msgin) {
     const std_msgs__msg__UInt32MultiArray *msg = (const std_msgs__msg__UInt32MultiArray *)msgin;
-    if (not msg == NULL and msg->data.size == SERVOS_COUNT) {
+    if (msg != NULL and msg->data.size == SERVOS_COUNT) {
         for(auto i=0u; i< SERVOS_COUNT; ++i){
             servo_manager.setWidth(i, msg->data.data[i]);
         }
@@ -201,14 +201,14 @@ void servos_command_callback(const void *msgin) {
 }
 void led1_callback(const void *msgin) {
     const std_msgs__msg__Bool *msg = (const std_msgs__msg__Bool *)msgin;
-    if (not msg == NULL) {
+    if (msg != NULL) {
         led2 = msg->data;
     }
 }
 
 void led2_callback(const void *msgin) {
     const std_msgs__msg__Bool *msg = (const std_msgs__msg__Bool *)msgin;
-    if (not msg == NULL) {
+    if (msg != NULL) {
         led3 = msg->data;
     }
 }
@@ -246,17 +246,30 @@ bool on_parameter_changed(const Parameter * old_param, const Parameter * new_par
         switch (old_param->value.type) {
             case RCLC_PARAMETER_DOUBLE:
                 it = servo_voltage_configuration.find(new_param->value.double_value);
-                if (it != servo_voltage_configuration.end()){
-                    servo_manager.setPowerMode(it->second);
-                    led2 = 0;
+                if (it == servo_voltage_configuration.end()){
+                    return false;
                 }
-                else{
-                    led2 = 1;
-                }
-
+                servo_manager.setPowerMode(it->second);
                 break;
             case RCLC_PARAMETER_BOOL:
-                servo_manager.enablePower(new_param->value.bool_value);
+                if(not strcmp(new_param->name.data, "servo_enable_power")){
+                    servo_manager.enablePower(new_param->value.bool_value);
+                }
+                else if (isdigit(new_param->name.data[5])){
+                    servo_manager.enableOutput(new_param->name.data[5] - '0', new_param->value.bool_value);
+                }
+                else{
+                    return false;
+                }
+                break;
+            case RCLC_PARAMETER_INT:
+                if (isdigit(new_param->name.data[5])){
+                    servo_manager.setPeriod(new_param->name.data[5] - '0', new_param->value.integer_value);
+                }
+                else{
+                    return false;
+                }
+                break;
             default:
                 break;
         }
@@ -276,7 +289,6 @@ int main() {
 
     // Change to parameter server
     for (auto i = 0u; i < 6; ++i) {
-        servo_manager.enableOutput(i, 1);
         servo_manager.setPeriod(i, 20000);
     }
 
@@ -356,7 +368,6 @@ int main() {
         fill_range_msg(&range_msgs[i], i);
     }
 
-    std::size_t ping_count = 0;
     AgentStates state = AGENT_CONNECTED;
     while (state == AGENT_CONNECTED) {
         EXECUTE_EVERY_N_MS(2000, state = (RMW_RET_OK == rmw_uros_ping_agent(200, 5)) ? AGENT_CONNECTED : AGENT_DISCONNECTED;);
