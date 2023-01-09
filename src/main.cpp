@@ -138,13 +138,10 @@ void check_speed_watchdog() {
     if (is_speed_watchdog_enabled) {
         if (!is_speed_watchdog_active && (odom_watchdog_timer.read_ms() - last_speed_command_time) > speed_watchdog_interval) {
             RosbotDrive &drive = RosbotDrive::getInstance();
-            NewTargetSpeed new_speed;
-            new_speed.mode = MPS;
-            new_speed.speed[0] = 0;
-            new_speed.speed[1] = 0;
-            new_speed.speed[2] = 0;
-            new_speed.speed[3] = 0;
-
+            NewTargetSpeed new_speed = {
+                .speed = {0.0, 0.0, 0.0, 0.0},
+                .mode = MPS
+            };
             drive.updateTargetSpeed(new_speed);
             is_speed_watchdog_active = true;
         }
@@ -176,15 +173,15 @@ void wheels_command_callback(const void *msgin) {
     const std_msgs__msg__Float32MultiArray *msg = (const std_msgs__msg__Float32MultiArray *)msgin;
     if (msg != NULL and msg->data.size == MOTORS_COUNT) {
         RosbotDrive &drive = RosbotDrive::getInstance();
-        NewTargetSpeed new_speed;
-        new_speed.mode = MPS;
-
-        // change order
-        new_speed.speed[0] = msg->data.data[motor_right_front] * WHEEL_RADIUS;
-        new_speed.speed[1] = msg->data.data[motor_right_rear] * WHEEL_RADIUS;
-        new_speed.speed[2] = msg->data.data[motor_left_rear] * WHEEL_RADIUS;
-        new_speed.speed[3] = msg->data.data[motor_left_front] * WHEEL_RADIUS;
-
+        NewTargetSpeed new_speed = {
+            .speed = {
+                msg->data.data[motor_right_front] * WHEEL_RADIUS,
+                msg->data.data[motor_right_rear] * WHEEL_RADIUS,
+                msg->data.data[motor_left_rear] * WHEEL_RADIUS,
+                msg->data.data[motor_left_front] * WHEEL_RADIUS,
+            },
+            .mode = MPS
+        };
         drive.updateTargetSpeed(new_speed);
         last_speed_command_time = odom_watchdog_timer.read_ms();
         is_speed_watchdog_active = false;
@@ -199,6 +196,7 @@ void servos_command_callback(const void *msgin) {
         }
     }
 }
+
 void led1_callback(const void *msgin) {
     const std_msgs__msg__Bool *msg = (const std_msgs__msg__Bool *)msgin;
     if (msg != NULL) {

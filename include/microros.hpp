@@ -58,12 +58,12 @@ enum Motors {
 };
 
 enum Servos{
+    servo0,
     servo1,
     servo2,
     servo3,
     servo4,
     servo5,
-    servo6,
     SERVOS_COUNT
 };
 
