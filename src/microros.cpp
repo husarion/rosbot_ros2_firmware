@@ -63,7 +63,7 @@ bool microros_init() {
     RCCHECK(rclc_timer_init_default(&range_timer, &support, RCL_MS_TO_NS( 200  ),
                                     publish_range_sensors));
 
-    RCCHECK(rclc_executor_init(&executor, &support.context, 12, &rcl_allocator));
+    RCCHECK(rclc_executor_init(&executor, &support.context, 11, &rcl_allocator));
     RCCHECK(rclc_executor_add_timer(&executor, &timer));
     RCCHECK(rclc_executor_add_timer(&executor, &range_timer));
 
@@ -184,7 +184,7 @@ bool init_led_subscribers(){
 bool init_param_server(){
     const rclc_parameter_options_t options = {
         .notify_changed_over_dds = true,
-        .max_params = 15
+        .max_params = 14
     };
     RCCHECK(rclc_parameter_server_init_with_option(&param_server, &node, &options));
     return true;

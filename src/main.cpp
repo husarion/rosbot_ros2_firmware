@@ -191,7 +191,7 @@ void wheels_command_callback(const void *msgin) {
 void servos_command_callback(const void *msgin) {
     const std_msgs__msg__UInt32MultiArray *msg = (const std_msgs__msg__UInt32MultiArray *)msgin;
     if (msg != NULL and msg->data.size == SERVOS_COUNT) {
-        for(auto i=0u; i< SERVOS_COUNT; ++i){
+        for(auto i = 0u; i < SERVOS_COUNT; ++i){
             servo_manager.setWidth(i, msg->data.data[i]);
         }
     }
