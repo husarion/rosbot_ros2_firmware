@@ -12,14 +12,17 @@
 #include <sensor_msgs/msg/joint_state.h>
 #include <sensor_msgs/msg/range.h>
 #include <std_msgs/msg/float32_multi_array.h>
-#include <std_msgs/msg/u_int16.h>
+#include <std_msgs/msg/u_int32_multi_array.h>
+#include <std_msgs/msg/bool.h>
 #include <microros_transport/mbed_serial_transport.hpp>
+#include <rclc_parameter/rclc_parameter.h>
 
 constexpr const char *NODE_NAME = "rosbot_stm32_firmware";
 constexpr const char *IMU_TOPIC_NAME = "_imu/data_raw";
 constexpr const char *WHEELS_STATE_TOPIC_NAME = "_motors_response";
 constexpr const char *BATTERY_TOPIC_NAME = "battery";
 constexpr const char *WHEELS_COMMAND_TOPIC_NAME = "_motors_cmd";
+constexpr const char *SERVOS_COMMAND_TOPIC_NAME = "cmd_ser";
 
 constexpr const char *FRONT_LEFT_MOTOR_NAME = "fl_wheel_joint";
 constexpr const char *FRONT_RIGHT_MOTOR_NAME = "fr_wheel_joint";
@@ -40,12 +43,28 @@ enum Ranges {
     RANGES_COUNT
 };
 
+enum LEDs{
+    led_left,
+    led_right,
+    LED_COUNT
+};
+
 enum Motors {
     motor_right_rear,
     motor_left_rear,
     motor_right_front,
     motor_left_front,
     MOTORS_COUNT
+};
+
+enum Servos{
+    servo0,
+    servo1,
+    servo2,
+    servo3,
+    servo4,
+    servo5,
+    SERVOS_COUNT
 };
 
 enum MotorsState {
@@ -64,12 +83,10 @@ enum AgentStates {
 
 static DigitalOut led2(LED2, 0);
 static DigitalOut led3(LED3, 0);
-void microros_deinit();
+bool microros_deinit();
 
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){return false;}}
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){led3 = 1;}}
-
-
 
 #define EXECUTE_EVERY_N_MS(MS, X)          \
     do {                                   \
@@ -86,7 +103,7 @@ void microros_deinit();
 void error_loop();
 
 bool microros_init();
-void microros_deinit();
+bool microros_deinit();
 bool microros_spin();
 
 bool init_imu_publisher();
@@ -94,16 +111,21 @@ bool init_wheels_state_publisher();
 bool init_battery_publisher();
 bool init_range_publishers();
 bool init_wheels_command_subscriber();
+bool init_servos_command_subscriber();
 bool init_button_publishers();
+bool init_led_subscribers();
+bool init_param_server();
+bool init_parameters();
 
 void fill_wheels_state_msg(sensor_msgs__msg__JointState *msg);
 void fill_imu_msg(sensor_msgs__msg__Imu *msg);
 void fill_battery_msg(sensor_msgs__msg__BatteryState *msg);
 void fill_wheels_command_msg(std_msgs__msg__Float32MultiArray *msg);
+void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg);
 void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
 
-void publish_imu_msg(sensor_msgs__msg__Imu *imu_msg);
-void publish_wheels_state_msg(sensor_msgs__msg__JointState *msg);
-void publish_battery_msg(sensor_msgs__msg__BatteryState *msg);
-void publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
-void publish_button_msg(std_msgs__msg__UInt16 *msg, uint8_t id);
+bool publish_imu_msg(sensor_msgs__msg__Imu *imu_msg);
+bool publish_wheels_state_msg(sensor_msgs__msg__JointState *msg);
+bool publish_battery_msg(sensor_msgs__msg__BatteryState *msg);
+bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
+bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id);
