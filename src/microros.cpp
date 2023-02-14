@@ -87,17 +87,19 @@ bool microros_deinit() {
     (void)rmw_uros_set_context_entity_destroy_session_timeout(rmw_context, 0);
 
     RCCHECK(rcl_subscription_fini(&wheels_command_sub, &node));
+    RCCHECK(rcl_subscription_fini(&servos_command_sub, &node));
+    for (auto i = 0u; i < LED_COUNT; ++i) {
+        RCCHECK(rcl_subscription_fini(&led_subs[i], &node));
+    }
     RCCHECK(rcl_publisher_fini(&wheels_state_pub, &node));
     RCCHECK(rcl_publisher_fini(&imu_pub, &node));
     RCCHECK(rcl_publisher_fini(&battery_pub, &node));
     for (auto i = 0u; i < RANGES_COUNT; ++i) {
         RCCHECK(rcl_publisher_fini(&range_pubs[i], &node));
     }
-
     for (auto i = 0u; i < BUTTONS_COUNT; ++i) {
         RCCHECK(rcl_publisher_fini(&buttons_pubs[i], &node));
     }
-
     RCCHECK(rclc_parameter_server_fini(&param_server, &node));
     RCCHECK(rclc_executor_fini(&executor));
     RCCHECK(rcl_node_fini(&node));
