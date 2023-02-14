@@ -182,6 +182,15 @@ void wheels_command_callback(const void *msgin) {
             },
             .mode = MPS
         };
+
+        for(auto i = 0u; i < MOTORS_COUNT; ++i){
+            if(isnan(new_speed.speed[i])){
+                float zero_speeds[MOTORS_COUNT] = {0, 0, 0, 0};
+                memcpy(new_speed.speed, zero_speeds, sizeof(new_speed.speed));
+                break;
+            }
+        }
+        
         drive.updateTargetSpeed(new_speed);
         last_speed_command_time = odom_watchdog_timer.read_ms();
         is_speed_watchdog_active = false;
