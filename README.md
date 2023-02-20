@@ -9,16 +9,19 @@ ______  _____  _____  _             _           __
 | |\ \ \ \_/ //\__/ /| |_) || (_) || |_       | |   \ V  V /
 \_| \_| \___/ \____/ |_.__/  \___/  \__|      |_|    \_/\_/
 ```
-**Firmware version:** `0.3.0`
+**Firmware version:** `0.3.1`
 
 ## Prerequisites
 You need to install following tools:
 * [Visual Studio Code IDE](https://code.visualstudio.com/)
 
 ### Required Visual Studio Code extensions
-* [Microsoft C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) (`ms-vscode.cpptools`)
-* [PlatformIO IDE](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide) (`platformio.platformio-ide`)
+* [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) (`ms-vscode-remote.remote-containers`)
 
+## Clone the repository
+```bash
+git clone https://github.com/husarion/rosbot_ros2_firmware
+```
 
 ## Loading dependencies
 Unfortunately, PlatformIO has a [bug](https://github.com/platformio/platform-ststm32/issues/491) that impacts libraries configuration. We use git submodules instead.
@@ -32,10 +35,13 @@ To import dependencies, in project's root directory run command:
 git submodule update --init --recursive
 ```
 
+## Open workspace in Devcontainer
+Click the left bottom green button in VS Code and select the `Reopen in Container` option.
+
 ## Speed up build process
 https://docs.platformio.org/en/latest/frameworks/mbed.html#ignoring-particular-components
 
-In directory `~/.platformio/packages/framework-mbed/features` create file called `.mbedignore` with the following content:
+In directory `~/.platformio/packages/framework-mbed/features` inside the devcontainer create file called `.mbedignore` with the following content:
 
 ```
 cellular/*
