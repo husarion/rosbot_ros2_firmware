@@ -190,7 +190,7 @@ void wheels_command_callback(const void *msgin) {
                 break;
             }
         }
-        
+
         drive.updateTargetSpeed(new_speed);
         last_speed_command_time = odom_watchdog_timer.read_ms();
         is_speed_watchdog_active = false;
@@ -281,7 +281,6 @@ bool on_parameter_changed(const Parameter * old_param, const Parameter * new_par
                 break;
         }
     }
-
   return true;
 }
 
