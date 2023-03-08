@@ -17,7 +17,7 @@
 #include <microros_transport/mbed_serial_transport.hpp>
 #include <rclc_parameter/rclc_parameter.h>
 
-constexpr const char *NODE_NAME = "rosbot_stm32_firmware";
+constexpr const char *NODE_NAME = "rosbot_ros2_firmware";
 constexpr const char *IMU_TOPIC_NAME = "_imu/data_raw";
 constexpr const char *WHEELS_STATE_TOPIC_NAME = "_motors_response";
 constexpr const char *BATTERY_TOPIC_NAME = "battery";
