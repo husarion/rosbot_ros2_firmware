@@ -2,7 +2,7 @@ Use `micro_ros_agent` to communicate with all firmware functionalities.
 ```bash
 ros2 run micro_ros_agent micro_ros_agent serial -D $SERIAL_PORT serial -b 576000
 ```
-- `rosbot_ros2_firmware` it is a micro-ROS node on CORE2 inside ROSbot 2, 2R, PRO. It is used to publish all the sensor data such as wheels positions, IMU measurements, battery level and buttons states from firmware to ROS2 and also to subscribe command values such as motors speeds, servos periods, servos parameters and LEDs states.
+- `rosbot_ros2_firmware` it is a micro-ROS node on CORE2 inside ROSbot 2R, 2 PRO, 2. It is used to publish all the sensor data such as wheels positions, IMU measurements, battery level and buttons states from firmware to ROS2 and also to subscribe command values such as motors speeds, servos periods, servos parameters and LEDs states.
     **Subscribes**
     - `/cmd_ser` (_std_msgs/msg/UInt32MultiArray[6]_)
     - `/led/left` (_std_msgs/msg/Bool_)
@@ -30,37 +30,36 @@ ros2 run micro_ros_agent micro_ros_agent serial -D $SERIAL_PORT serial -b 576000
     - `servo[0...5]_enable` (*Bool_) e.g. `servo2_enable`
     - `servo[0...5]_period` (*UInt32_) e.g. `servo2_period`
 
-## Command line examples
-### Motors driving
-```bash
-# Go forward
-ros2 topic pub /_motors_cmd std_msgs/msg/Float32MultiArray "data: [1.0, 1.0, 1.0, 1.0]"
-```
+#### Command line examples
+- **Motors driving (e.g. go forward)**
+    ```bash
+    ros2 topic pub /_motors_cmd std_msgs/msg/Float32MultiArray "data: [1.0, 1.0, 1.0, 1.0]"
+    ```
 
-### Servos steering
-```bash
-# Choose power supply voltage for the servos e.g. 5.0V
-ros2 param set /rosbot_stm32_firmware servo_voltage 5.0
+- **Servos steering**
+    ```bash
+    # Choose power supply voltage for the servos e.g. 5.0V
+    ros2 param set /rosbot_stm32_firmware servo_voltage 5.0
 
-# Enable power for the servos
-ros2 param set /rosbot_stm32_firmware servo_enable_power true
+    # Enable power for the servos
+    ros2 param set /rosbot_stm32_firmware servo_enable_power true
 
-# Set the control period in microseconds e.g. 20 000us for the servo5
-ros2 param set /rosbot_stm32_firmware servo5_period 20000
+    # Set the control period in microseconds e.g. 20 000us for the servo5
+    ros2 param set /rosbot_stm32_firmware servo5_period 20000
 
-# Enable PWM output for the servo e.g. for the servo5
-ros2 param set /rosbot_stm32_firmware servo5_enable true
+    # Enable PWM output for the servo e.g. for the servo5
+    ros2 param set /rosbot_stm32_firmware servo5_enable true
 
-# Send duty cycle to the servos
-ros2 topic  pub /cmd_ser std_msgs/msg/UInt32MultiArray "data: [0, 0, 0, 0, 0, 2000]"
+    # Send duty cycle to the servos
+    ros2 topic  pub /cmd_ser std_msgs/msg/UInt32MultiArray "data: [0, 0, 0, 0, 0, 2000]"
 
-```
+    ```
 
-### LED blinking
-```bash
-# Turn on the left LED
-ros2 topic pub /led/left std_msgs/msg/Bool "data: true"
+-   **LED blinking**
+    ```bash
+    # Turn on the left LED
+    ros2 topic pub /led/left std_msgs/msg/Bool "data: true"
 
-# Turn off the left LED
-ros2 topic pub /led/left std_msgs/msg/Bool "data: false"
-```
+    # Turn off the left LED
+    ros2 topic pub /led/left std_msgs/msg/Bool "data: false"
+    ```
