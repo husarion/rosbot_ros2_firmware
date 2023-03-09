@@ -9,7 +9,9 @@ ______  _____  _____  _             _           __
 | |\ \ \ \_/ //\__/ /| |_) || (_) || |_       | |   \ V  V /
 \_| \_| \___/ \____/ |_.__/  \___/  \__|      |_|    \_/\_/
 ```
-**Firmware version:** `0.3.2`
+**Firmware version:**
+
+[![rosbot_ros2_firmware](https://img.shields.io/github/v/release/husarion/rosbot_ros2_firmware)](https://github.com/husarion/rosbot_ros2_firmware/releases/latest)
 
 ## Prerequisites
 You need to install following tools:
