@@ -25,7 +25,7 @@ std_msgs__msg__UInt32MultiArray servos_command_msg;
 std_msgs__msg__Bool led_msg;
 
 const char *range_frame_names[] = {"fr_range", "fl_range", "rr_range", "rl_range"};
-const char *range_pub_names[] = {"range/right_front", "range/left_front", "range/right_rear", "range/left_rear"};
+const char *range_pub_names[] = {"range/fr", "range/fl", "range/rr", "range/rl"};
 const char *buttons_pub_names[] = {"button/left", "button/right"};
 const char *led_subs_names[] = {"led/left", "led/right"};
 
