@@ -23,8 +23,9 @@ static UARTSerial microros_serial(RPI_SERIAL_TX, RPI_SERIAL_RX);
 
 static volatile bool distance_sensors_enabled = false;
 
-static volatile bool button1_publish_flag = false;
-static volatile bool button2_publish_flag = false;
+static volatile bool buttons_publish_flag[BUTTONS_COUNT] = {false, false};
+static volatile float button_release_time = 0.1;
+
 static volatile float battery_voltage = 0.0;
 
 static volatile bool is_speed_watchdog_enabled = true;
@@ -53,6 +54,8 @@ std::map<double, uint8_t> servo_voltage_configuration{
 #define MOTOR_FL MOTOR4
 #define MOTOR_RR MOTOR2
 #define MOTOR_RL MOTOR3
+time_t last_button_press_time[BUTTONS_COUNT];
+
 
 constexpr uint8_t POLARITY = 0b00111100;
 constexpr float ROBOT_LENGTH = 0.197;
