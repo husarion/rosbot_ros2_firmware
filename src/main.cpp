@@ -36,11 +36,11 @@ std_msgs__msg__Bool button_msgs[BUTTONS_COUNT];
 static uint32_t spin_count = 1;
 
 static void button1Callback() {
-    button1_publish_flag = true;
+    buttons_publish_flag[0] = true;
 }
 
 static void button2Callback() {
-    button2_publish_flag = true;
+    buttons_publish_flag[1] = true;
 }
 
 void range_sensors_msg_handler() {
@@ -111,16 +111,17 @@ void battery_msg_handler() {
 }
 
 void button_msgs_handler() {
-    if (button1_publish_flag) {
-        button_msgs[0].data = 1;
-        button1_publish_flag = false;
-        publish_button_msg(&button_msgs[0], 0);
-    }
-
-    if (button2_publish_flag) {
-        button_msgs[1].data = 1;
-        button2_publish_flag = false;
-        publish_button_msg(&button_msgs[1], 1);
+    for(auto i = 0u; i < BUTTONS_COUNT; ++i){
+        if (buttons_publish_flag[i]) {
+            button_msgs[i].data = true;
+            buttons_publish_flag[i] = false;
+            publish_button_msg(&button_msgs[i], i);
+            last_button_press_time[i] = time(NULL);
+        }
+        else if(time(NULL) - last_button_press_time[i]  > button_release_time){
+            button_msgs[i].data = false;
+            publish_button_msg(&button_msgs[i], i);
+        }
     }
 }
 

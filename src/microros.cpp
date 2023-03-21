@@ -328,4 +328,7 @@ void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
     msg->field_of_view = 0.26;
     msg->min_range = 0.01;
     msg->max_range = 0.90;
+    if(msg->range > msg->max_range || msg->range < msg->min_range){
+        msg->range = NAN;
+    }
 }
