@@ -62,12 +62,7 @@ void range_sensors_msg_handler() {
         } else {
             err_msg = 0;
             for (auto i = 0u; i < RANGES_COUNT; ++i) {
-                if(message->range[i] > range_msgs[i].max_range && message->range[i] < range_msgs[i].min_range){
-                    range_msgs[i].range = NAN;
-                }
-                else{
-                    range_msgs[i].range = message->range[i];
-                }
+                range_msgs[i].range = message->range[i];
             }
         }
         distance_sensor_mail_box.free(message);
