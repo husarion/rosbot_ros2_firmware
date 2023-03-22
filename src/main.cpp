@@ -285,6 +285,13 @@ bool on_parameter_changed(const Parameter * old_param, const Parameter * new_par
   return true;
 }
 
+void wait_for_ros_domain_id(){
+    size_t return_code = 0;
+    while(return_code == 0){
+        return_code = get_ros_domain_id(&microros_serial, &ros_domain_id);
+    }
+}
+
 int main() {
     ThisThread::sleep_for(100);
     sens_power = 1;  // sensors power on
@@ -348,6 +355,7 @@ int main() {
     }
 
     read_and_show_battery_state();
+    wait_for_ros_domain_id();
 
     set_microros_serial_transports(&microros_serial);
     while (not rmw_uros_ping_agent(100, 1) == RMW_RET_OK) {
@@ -355,7 +363,7 @@ int main() {
         ThisThread::sleep_for(100);
     }
 
-    if (not microros_init()) {
+    if (not microros_init(ros_domain_id)) {
         microros_deinit();
         ThisThread::sleep_for(2000);
 

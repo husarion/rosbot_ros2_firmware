@@ -29,6 +29,8 @@ constexpr const char *FRONT_RIGHT_MOTOR_NAME = "fr_wheel_joint";
 constexpr const char *REAR_LEFT_MOTOR_NAME = "rl_wheel_joint";
 constexpr const char *REAR_RIGHT_MOTOR_NAME = "rr_wheel_joint";
 
+static size_t ros_domain_id = 0;
+
 enum Buttons{
     button_left,
     button_right,
@@ -102,7 +104,7 @@ bool microros_deinit();
 
 void error_loop();
 
-bool microros_init();
+bool microros_init(size_t ros_domain_id);
 bool microros_deinit();
 bool microros_spin();
 

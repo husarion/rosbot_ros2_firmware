@@ -2,6 +2,7 @@
 
 #include <rmw_microros/custom_transport.h>
 #include <uxr/client/transport.h>
+#include <string>
 
 extern "C" {
 
@@ -35,4 +36,13 @@ void set_microros_serial_transports(mbed::UARTSerial *serial) {
     rmw_uros_set_custom_transport(true, serial, serial_transport_open,
                                   serial_transport_close, serial_transport_write,
                                   serial_transport_read);
+}
+
+size_t get_ros_domain_id(mbed::UARTSerial *serial, size_t* ros_domain_id){
+    char buf[GET_DOMAIN_ID_LENGHT];
+    auto rc = serial->read(buf, sizeof(buf));
+    if(rc != -1){
+        sscanf(buf, "%hhd", ros_domain_id);
+    }
+    return rc;
 }
