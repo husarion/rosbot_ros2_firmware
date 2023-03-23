@@ -7,7 +7,7 @@ namespace rosbot_sensors{
 #define MEASUREMENT_SERIES 10
 #define BATTERY_VOLTAGE_LOW 10.8
 
-enum 
+enum
 {
     BATTERY_LOW = 1,
     BATTERY_OK = 0
@@ -20,7 +20,7 @@ typedef struct BatteryData
     uint8_t status;
 }BatteryData_t;
 
-static BatteryData_t battery_data = { 0.0, BATTERY_VOLTAGE_LOW, BATTERY_OK}; 
+static BatteryData_t battery_data = { 0.0, BATTERY_VOLTAGE_LOW, BATTERY_OK};
 static DigitalOut battery_led(LED1,1);
 static Ticker battery_led_flipper;
 static void readVoltageInternal();

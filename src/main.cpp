@@ -287,7 +287,7 @@ bool on_parameter_changed(const Parameter * old_param, const Parameter * new_par
 
 void wait_for_ros_domain_id(){
     size_t return_code = 0;
-    while(return_code == 0){
+    while(return_code <= 0){
         return_code = get_ros_domain_id(&microros_serial, &ros_domain_id);
     }
 }
