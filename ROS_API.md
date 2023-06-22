@@ -39,16 +39,16 @@ ros2 run micro_ros_agent micro_ros_agent serial -D $SERIAL_PORT serial -b 576000
 - **Servos steering**
     ```bash
     # Choose power supply voltage for the servos e.g. 5.0V
-    ros2 param set /rosbot_stm32_firmware servo_voltage 5.0
+    ros2 param set /rosbot_ros2_firmware servo_voltage 5.0
 
     # Enable power for the servos
-    ros2 param set /rosbot_stm32_firmware servo_enable_power true
+    ros2 param set /rosbot_ros2_firmware servo_enable_power true
 
     # Set the control period in microseconds e.g. 20 000us for the servo5
-    ros2 param set /rosbot_stm32_firmware servo5_period 20000
+    ros2 param set /rosbot_ros2_firmware servo5_period 20000
 
     # Enable PWM output for the servo e.g. for the servo5
-    ros2 param set /rosbot_stm32_firmware servo5_enable true
+    ros2 param set /rosbot_ros2_firmware servo5_enable true
 
     # Send duty cycle to the servos
     ros2 topic  pub /cmd_ser std_msgs/msg/UInt32MultiArray "data: [0, 0, 0, 0, 0, 2000]"
