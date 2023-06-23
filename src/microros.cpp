@@ -45,6 +45,7 @@ bool microros_init() {
     rcl_allocator = rcl_get_default_allocator();
     RCCHECK(rclc_support_init(&support, 0, NULL, &rcl_allocator));
     RCCHECK(rclc_node_init_default(&node, NODE_NAME, "", &support));
+
     if (not init_wheels_command_subscriber() or
         not init_servos_command_subscriber() or
         not init_wheels_state_publisher() or
@@ -151,7 +152,7 @@ bool init_range_publishers() {
 
 bool init_button_publishers() {
     for (auto i = 0u; i < BUTTONS_COUNT; ++i) {
-        RCCHECK(rclc_publisher_init_best_effort(
+        RCCHECK(rclc_publisher_init_default(
             &buttons_pubs[i],
             &node,
             ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
