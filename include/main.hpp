@@ -54,7 +54,6 @@ std::map<double, uint8_t> servo_voltage_configuration{
 #define MOTOR_FL MOTOR4
 #define MOTOR_RR MOTOR2
 #define MOTOR_RL MOTOR3
-time_t last_button_press_time[BUTTONS_COUNT];
 
 constexpr uint8_t POLARITY = 0b00111100;
 constexpr float ROBOT_LENGTH = 0.197;

@@ -35,12 +35,20 @@ std_msgs__msg__Bool button_msgs[BUTTONS_COUNT];
 
 static uint32_t spin_count = 1;
 
-static void button1Callback() {
+static void button1FallCallback() {
     buttons_publish_flag[0] = true;
 }
 
-static void button2Callback() {
+static void button2FallCallback() {
     buttons_publish_flag[1] = true;
+}
+
+static void button1RiseCallback() {
+    buttons_publish_flag[0] = false;
+}
+
+static void button2RiseCallback() {
+    buttons_publish_flag[1] = false;
 }
 
 void range_sensors_msg_handler() {
@@ -112,14 +120,8 @@ void battery_msg_handler() {
 
 void button_msgs_handler() {
     for(auto i = 0u; i < BUTTONS_COUNT; ++i){
-        if (buttons_publish_flag[i]) {
-            button_msgs[i].data = true;
-            buttons_publish_flag[i] = false;
-            publish_button_msg(&button_msgs[i], i);
-            last_button_press_time[i] = time(NULL);
-        }
-        else if(time(NULL) - last_button_press_time[i]  > button_release_time){
-            button_msgs[i].data = false;
+        if (buttons_publish_flag[i] != button_msgs[i].data) {
+            button_msgs[i].data = buttons_publish_flag[i];
             publish_button_msg(&button_msgs[i], i);
         }
     }
@@ -309,8 +311,11 @@ int main() {
 
     button1.mode(PullUp);
     button2.mode(PullUp);
-    button1.fall(button1Callback);
-    button2.fall(button2Callback);
+    button1.fall(button1FallCallback);
+    button2.fall(button2FallCallback);
+    button1.rise(button1RiseCallback);
+    button2.rise(button2RiseCallback);
+
 
     bool distance_sensors_init_flag = false;
     bool imu_init_flag = false;
