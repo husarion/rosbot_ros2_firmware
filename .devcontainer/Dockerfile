@@ -20,7 +20,7 @@ RUN sudo apt-get update && \
     build-essential sudo git cmake gdb clang clang-format cppcheck bash-completion python3-pip curl gcc-arm-none-eabi && \
     python3 -c "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py)" && \
     ln -s /home/husarion/.platformio/penv/bin/platformio /bin/pio && \
-    pip install -U colcon-common-extensions
+    pip install -U colcon-common-extensions lark
 
 # Build core2-flasher
 RUN git clone https://github.com/husarion/flasher && \
@@ -30,4 +30,4 @@ RUN git clone https://github.com/husarion/flasher && \
 
 # Build stm32 flasher
 RUN git clone https://github.com/husarion/stm32loader && \
-    cd stm32loader && sudo python setup.py install 
+    cd stm32loader && sudo python setup.py install

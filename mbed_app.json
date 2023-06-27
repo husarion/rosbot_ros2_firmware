@@ -1,8 +1,4 @@
 {
-    "macros": [
-        "ROSBOT_FW_VERSION=\"0.15.0\"",
-        "WELLCOME_BANNER"
-    ],
     "target_overrides": {
         "CORE2": {
             "platform.all-stats-enabled": false,
