@@ -1,7 +1,7 @@
 FROM python:3.9-slim AS stm32flash_builder
 
 
-ARG USERNAME=husarion
+ARG USERNAME=runner
 ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 
@@ -19,7 +19,7 @@ RUN sudo apt-get update && \
     sudo apt-get install --no-install-recommends -y \
     build-essential sudo git cmake gdb clang clang-format cppcheck bash-completion python3-pip curl gcc-arm-none-eabi && \
     python3 -c "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py)" && \
-    ln -s /home/husarion/.platformio/penv/bin/platformio /bin/pio && \
+    ln -s /home/runner/.platformio/penv/bin/platformio /bin/pio && \
     pip install -U colcon-common-extensions lark
 
 # Build core2-flasher
