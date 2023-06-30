@@ -43,7 +43,12 @@ bool microros_init() {
     fill_servos_command_msg(&servos_command_msg);
 
     rcl_allocator = rcl_get_default_allocator();
-    RCCHECK(rclc_support_init(&support, 0, NULL, &rcl_allocator));
+
+    rcl_init_options_t init_options = rcl_get_zero_initialized_init_options();
+    RCCHECK(rcl_init_options_init(&init_options, rcl_allocator));
+    RCCHECK(rcl_init_options_set_domain_id(&init_options, UXR_CLIENT_DOMAIN_ID_TO_OVERRIDE_WITH_ENV));
+    RCCHECK(rclc_support_init_with_options(&support, 0, NULL, &init_options, &rcl_allocator));
+
     RCCHECK(rclc_node_init_default(&node, NODE_NAME, "", &support));
 
     if (not init_wheels_command_subscriber() or

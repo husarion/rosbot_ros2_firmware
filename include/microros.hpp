@@ -17,6 +17,8 @@
 #include <microros_transport/mbed_serial_transport.hpp>
 #include <rclc_parameter/rclc_parameter.h>
 
+constexpr const uint8_t UXR_CLIENT_DOMAIN_ID_TO_OVERRIDE_WITH_ENV = 255;
+
 constexpr const char *NODE_NAME = "rosbot_ros2_firmware";
 constexpr const char *IMU_TOPIC_NAME = "_imu/data_raw";
 constexpr const char *WHEELS_STATE_TOPIC_NAME = "_motors_response";
@@ -28,7 +30,6 @@ constexpr const char *FRONT_LEFT_MOTOR_NAME = "fl_wheel_joint";
 constexpr const char *FRONT_RIGHT_MOTOR_NAME = "fr_wheel_joint";
 constexpr const char *REAR_LEFT_MOTOR_NAME = "rl_wheel_joint";
 constexpr const char *REAR_RIGHT_MOTOR_NAME = "rr_wheel_joint";
-
 enum Buttons{
     button_left,
     button_right,
