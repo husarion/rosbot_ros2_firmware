@@ -13,13 +13,14 @@
 #define IMU_I2C_SCL SENS2_PIN3
 #define IMU_I2C_SDA SENS2_PIN4
 
-extern Mail<ImuDriver::ImuMesurement, 10> imu_sensor_mail_box;
+extern Mail<ImuDriver::ImuMeasurement, 10> imu_sensor_mail_box;
 
 const char *imu_sensor_type_string[] = {
     "BNO055_ADDR_A",
     "BNO055_ADDR_B",
     "MPU9250",
     "MPU9255",
+    "BHI260",
     "UNKNOWN"};
 char imu_description_string[64] = "";
 
@@ -91,7 +92,7 @@ void imu_msg_handler() {
     osEvent evt2 = imu_sensor_mail_box.get(0);
 
     if (evt2.status == osEventMail) {
-        ImuDriver::ImuMesurement *message = (ImuDriver::ImuMesurement *)evt2.value.p;
+        ImuDriver::ImuMeasurement *message = (ImuDriver::ImuMeasurement *)evt2.value.p;
         fill_imu_msg(&imu_msg);
         imu_msg.orientation.y = message->orientation[1];
         imu_msg.orientation.z = message->orientation[2];
