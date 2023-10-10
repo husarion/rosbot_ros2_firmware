@@ -24,17 +24,12 @@ const char *imu_sensor_type_string[] = {
     "UNKNOWN"};
 char imu_description_string[64] = "";
 
-static float curr_odom_calc_time = 0.0;
-static float last_odom_calc_time = 0.0;
 volatile uint8_t err_msg;
 
 sensor_msgs__msg__Imu imu_msg;
 sensor_msgs__msg__BatteryState battery_msg;
-sensor_msgs__msg__JointState wheels_state_msg;
 sensor_msgs__msg__Range range_msgs[RANGES_COUNT];
 std_msgs__msg__Bool button_msgs[BUTTONS_COUNT];
-
-static uint32_t spin_count = 1;
 
 static void button1FallCallback() {
     buttons_publish_flag[0] = true;
@@ -130,6 +125,7 @@ void button_msgs_handler() {
 
 void wheels_state_msg_handler() {
     if (spin_count % 5 == 0) {
+        fill_wheels_state_msg(&wheels_state_msg);
         publish_wheels_state_msg(&wheels_state_msg);
     }
 }
@@ -138,86 +134,12 @@ void read_and_show_battery_state() {
     battery_voltage = rosbot_sensors::updateBatteryWatchdog();
 }
 
-void check_speed_watchdog() {
-    if (is_speed_watchdog_enabled) {
-        if (!is_speed_watchdog_active && (odom_watchdog_timer.read_ms() - last_speed_command_time) > speed_watchdog_interval) {
-            RosbotDrive &drive = RosbotDrive::getInstance();
-            NewTargetSpeed new_speed = {
-                .speed = {0.0, 0.0, 0.0, 0.0},
-                .mode = MPS
-            };
-            drive.updateTargetSpeed(new_speed);
-            is_speed_watchdog_active = true;
-        }
-    }
-}
-
-void update_odometry() {
-    if (spin_count % 2 == 0) {
-        RosbotDrive &drive = RosbotDrive::getInstance();
-
-        float current_position[MOTORS_COUNT];
-        current_position[motor_left_front] = drive.getAngularPos(MOTOR_FL);
-        current_position[motor_right_front] = drive.getAngularPos(MOTOR_FR);
-        current_position[motor_left_rear] = drive.getAngularPos(MOTOR_RL);
-        current_position[motor_right_rear] = drive.getAngularPos(MOTOR_RR);
-
-        curr_odom_calc_time = odom_watchdog_timer.read();
-        double dt = curr_odom_calc_time - last_odom_calc_time;
-        last_odom_calc_time = curr_odom_calc_time;
-
-        for (auto i = 0u; i < MOTORS_COUNT; ++i) {
-            wheels_state_msg.velocity.data[i] = (current_position[i] - wheels_state_msg.position.data[i]) / dt;
-            wheels_state_msg.position.data[i] = current_position[i];
-        }
-    }
-}
-
-void wheels_command_callback(const void *msgin) {
-    const std_msgs__msg__Float32MultiArray *msg = (const std_msgs__msg__Float32MultiArray *)msgin;
-    if (msg != NULL and msg->data.size == MOTORS_COUNT) {
-        RosbotDrive &drive = RosbotDrive::getInstance();
-        NewTargetSpeed new_speed = {
-            .speed = {
-                msg->data.data[motor_right_front] * WHEEL_RADIUS,
-                msg->data.data[motor_right_rear] * WHEEL_RADIUS,
-                msg->data.data[motor_left_rear] * WHEEL_RADIUS,
-                msg->data.data[motor_left_front] * WHEEL_RADIUS,
-            },
-            .mode = MPS
-        };
-
-        for(auto i = 0u; i < MOTORS_COUNT; ++i){
-            if(isnan(new_speed.speed[i])){
-                float zero_speeds[MOTORS_COUNT] = {0, 0, 0, 0};
-                memcpy(new_speed.speed, zero_speeds, sizeof(new_speed.speed));
-                break;
-            }
-        }
-
-        drive.updateTargetSpeed(new_speed);
-        last_speed_command_time = odom_watchdog_timer.read_ms();
-        is_speed_watchdog_active = false;
-    }
-}
-
 void servos_command_callback(const void *msgin) {
     const std_msgs__msg__UInt32MultiArray *msg = (const std_msgs__msg__UInt32MultiArray *)msgin;
     if (msg != NULL and msg->data.size == SERVOS_COUNT) {
         for(auto i = 0u; i < SERVOS_COUNT; ++i){
             servo_manager.setWidth(i, msg->data.data[i]);
         }
-    }
-}
-
-
-
-void odometry_callback() {
-    while (true) {
-        check_speed_watchdog();
-        read_and_show_battery_state();
-        update_odometry();
-        ThisThread::sleep_for(10);
     }
 }
 
@@ -280,24 +202,9 @@ int main() {
     ThisThread::sleep_for(100);
     sens_power = 1;  // sensors power on
     ThisThread::sleep_for(100);
-    odom_watchdog_timer.start();
+    init_wheels();
 
-    RosbotDrive &drive = RosbotDrive::getInstance();
     MultiDistanceSensor &distance_sensors = MultiDistanceSensor::getInstance();
-
-    RosbotWheel custom_wheel_params = {
-        .radius = WHEEL_RADIUS,
-        .diameter_modificator = DIAMETER_MODIFICATOR,
-        .tyre_deflation = TYRE_DEFLATION,
-        .gear_ratio = GEAR_RATIO,
-        .encoder_cpr = ENCODER_CPR,
-        .polarity = POLARITY};
-
-    drive.setupMotorSequence(MOTOR_FR, MOTOR_FL, MOTOR_RR, MOTOR_RL);
-    drive.init(custom_wheel_params, RosbotDrive::DEFAULT_REGULATOR_PARAMS);
-    drive.enable(true);
-    drive.enablePidReg(true);
-
     button1.mode(PullUp);
     button2.mode(PullUp);
     button1.fall(button1FallCallback);
@@ -327,8 +234,6 @@ int main() {
         imu_init_flag = true;
     }
 
-    Thread odometry_thread;
-    odometry_thread.start(odometry_callback);
 
     if (imu_init_flag) {
         imu_driver_ptr->start();

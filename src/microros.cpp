@@ -20,7 +20,6 @@ rcl_subscription_t led_subs[LED_COUNT];
 
 rclc_parameter_server_t param_server;
 
-std_msgs__msg__Float32MultiArray wheels_command_msg;
 std_msgs__msg__UInt32MultiArray servos_command_msg;
 std_msgs__msg__Bool led_msg;
 
@@ -30,14 +29,13 @@ const char *buttons_pub_names[] = {"button/left", "button/right"};
 const char *led_subs_names[] = {"led/left", "led/right"};
 
 extern void timer_callback(rcl_timer_t *timer, int64_t last_call_time);
-extern void wheels_command_callback(const void *msgin);
+// extern void wheels_command_callback(const void *msgin);
 extern void servos_command_callback(const void *msgin);
 
 extern void publish_range_sensors(rcl_timer_t *timer, int64_t last_call_time);
 extern bool on_parameter_changed(const Parameter * old_param, const Parameter * new_param, void * context);
 
 bool microros_init() {
-    fill_wheels_command_msg(&wheels_command_msg);
     fill_servos_command_msg(&servos_command_msg);
 
     rcl_allocator = rcl_get_default_allocator();
@@ -241,35 +239,6 @@ bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id) {
     return true;
 }
 
-void fill_wheels_state_msg(sensor_msgs__msg__JointState *msg) {
-    static double msg_data_tab[MOTORS_STATE_COUNT][MOTORS_COUNT];
-    static rosidl_runtime_c__String msg_name_tab[MOTORS_COUNT];
-    msg->header.frame_id = micro_ros_string_utilities_set(msg->header.frame_id, "wheels_state");
-
-    msg->position.data = msg_data_tab[motor_state_position];
-    msg->position.capacity = msg->position.size = MOTORS_COUNT;
-    msg->velocity.data = msg_data_tab[motor_state_velocity];
-    msg->velocity.capacity = msg->velocity.size = MOTORS_COUNT;
-    msg->effort.data = msg_data_tab[motor_state_effort];
-    msg->effort.capacity = msg->effort.size = MOTORS_COUNT;
-
-    msg_name_tab->capacity = msg_name_tab->size = MOTORS_COUNT;
-    msg_name_tab[motor_left_front].data = (char *)FRONT_LEFT_MOTOR_NAME;
-    msg_name_tab[motor_right_front].data = (char *)FRONT_RIGHT_MOTOR_NAME;
-    msg_name_tab[motor_left_rear].data = (char *)REAR_LEFT_MOTOR_NAME;
-    msg_name_tab[motor_right_rear].data = (char *)REAR_RIGHT_MOTOR_NAME;
-    for (uint8_t i = 0; i < MOTORS_COUNT; i++) {
-        msg_name_tab[i].capacity = msg_name_tab[i].size = strlen(msg_name_tab[i].data);
-    }
-    msg->name.capacity = msg->name.size = MOTORS_COUNT;
-    msg->name.data = msg_name_tab;
-
-    if (rmw_uros_epoch_synchronized()) {
-        msg->header.stamp.sec = (int32_t)(rmw_uros_epoch_nanos() / 1000000000);
-        msg->header.stamp.nanosec = (uint32_t)(rmw_uros_epoch_nanos() % 1000000000);
-    }
-}
-
 void fill_imu_msg(sensor_msgs__msg__Imu *msg) {
     msg->header.frame_id = micro_ros_string_utilities_set(msg->header.frame_id, "imu");
 
@@ -304,13 +273,6 @@ void fill_battery_msg(sensor_msgs__msg__BatteryState *msg) {
     }
 
     msg->power_supply_technology = sensor_msgs__msg__BatteryState__POWER_SUPPLY_TECHNOLOGY_LION;
-}
-
-void fill_wheels_command_msg(std_msgs__msg__Float32MultiArray *msg) {
-    static float data[MOTORS_COUNT] = {0, 0, 0, 0};
-    msg->data.capacity = MOTORS_COUNT;
-    msg->data.size = 0;
-    msg->data.data = (float *)data;
 }
 
 void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg) {

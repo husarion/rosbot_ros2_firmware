@@ -28,13 +28,6 @@ static volatile float button_release_time = 0.1;
 
 static volatile float battery_voltage = 0.0;
 
-static volatile bool is_speed_watchdog_enabled = true;
-static volatile bool is_speed_watchdog_active = false;
-static uint64_t speed_watchdog_interval = 1000;  // ms
-
-static Timer odom_watchdog_timer;
-static volatile uint32_t last_speed_command_time = 0;
-
 static DigitalOut sens_power(SENS_POWER_ON, 0);
 
 static InterruptIn button1(BUTTON1);
@@ -48,23 +41,3 @@ std::map<double, uint8_t> servo_voltage_configuration{
     {7.4, 2},
     {8.6, 3}
 };
-
-// Motors setup
-#define MOTOR_FR MOTOR1
-#define MOTOR_FL MOTOR4
-#define MOTOR_RR MOTOR2
-#define MOTOR_RL MOTOR3
-
-constexpr uint8_t POLARITY = 0b00111100;
-constexpr float ROBOT_LENGTH = 0.197;
-constexpr uint8_t ENCODER_CPR = 48;
-constexpr float ROBOT_LENGTH_HALF = ROBOT_LENGTH / 2.0;
-constexpr float DISTANCE_FRONT_TO_REAR_WHEEL = 0.11;
-constexpr float WHEEL_SEPARATION_LENGTH = DISTANCE_FRONT_TO_REAR_WHEEL / 2;
-constexpr float ROBOT_WIDTH = 0.215;  // 0.22 0.195
-constexpr float ROBOT_WIDTH_HALF = ROBOT_WIDTH / 2.0;
-constexpr float DIAMETER_MODIFICATOR = 1.106;  // 1.24, 1.09, 1.164
-constexpr float TYRE_DEFLATION = 1.042;        // theoretical distance / real distance
-constexpr float GEAR_RATIO = 34.014;
-constexpr float WHEEL_DIAMETER = 0.085;
-constexpr float WHEEL_RADIUS = WHEEL_DIAMETER / 2.0;
