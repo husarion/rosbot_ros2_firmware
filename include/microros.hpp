@@ -17,6 +17,8 @@
 #include <microros_transport/mbed_serial_transport.hpp>
 #include <rclc_parameter/rclc_parameter.h>
 
+#include <leds.hpp>
+
 constexpr const uint8_t UXR_CLIENT_DOMAIN_ID_TO_OVERRIDE_WITH_ENV = 255;
 
 constexpr const char *NODE_NAME = "rosbot_ros2_firmware";
@@ -42,12 +44,6 @@ enum Ranges {
     range_right_rear,
     range_left_rear,
     RANGES_COUNT
-};
-
-enum LEDs{
-    led_left,
-    led_right,
-    LED_COUNT
 };
 
 enum Motors {
@@ -82,8 +78,7 @@ enum AgentStates {
     AGENT_DISCONNECTED
 };
 
-static DigitalOut led2(LED2, 0);
-static DigitalOut led3(LED3, 0);
+
 bool microros_deinit();
 
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){return false;}}

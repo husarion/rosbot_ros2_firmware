@@ -32,8 +32,6 @@ const char *led_subs_names[] = {"led/left", "led/right"};
 extern void timer_callback(rcl_timer_t *timer, int64_t last_call_time);
 extern void wheels_command_callback(const void *msgin);
 extern void servos_command_callback(const void *msgin);
-extern void led1_callback(const void *msgin);
-extern void led2_callback(const void *msgin);
 
 extern void publish_range_sensors(rcl_timer_t *timer, int64_t last_call_time);
 extern bool on_parameter_changed(const Parameter * old_param, const Parameter * new_param, void * context);
