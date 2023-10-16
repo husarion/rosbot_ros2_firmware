@@ -26,25 +26,22 @@ void init_wheels()
 
 void update_wheels_states()
 {
-  if (spin_count % 2 == 0)
+  RosbotDrive& drive = RosbotDrive::getInstance();
+
+  float current_position[MOTORS_COUNT];
+  current_position[motor_left_front] = drive.getAngularPos(MOTOR_FL);
+  current_position[motor_right_front] = drive.getAngularPos(MOTOR_FR);
+  current_position[motor_left_rear] = drive.getAngularPos(MOTOR_RL);
+  current_position[motor_right_rear] = drive.getAngularPos(MOTOR_RR);
+
+  const float current_time = odom_watchdog_timer.read();
+  const float dt = current_time - last_wheels_speed_calc_time;
+  last_wheels_speed_calc_time = current_time;
+
+  for (auto i = 0u; i < MOTORS_COUNT; ++i)
   {
-    RosbotDrive& drive = RosbotDrive::getInstance();
-
-    float current_position[MOTORS_COUNT];
-    current_position[motor_left_front] = drive.getAngularPos(MOTOR_FL);
-    current_position[motor_right_front] = drive.getAngularPos(MOTOR_FR);
-    current_position[motor_left_rear] = drive.getAngularPos(MOTOR_RL);
-    current_position[motor_right_rear] = drive.getAngularPos(MOTOR_RR);
-
-    const float current_time = odom_watchdog_timer.read();
-    const float dt = current_time - last_wheels_speed_calc_time;
-    last_wheels_speed_calc_time = current_time;
-
-    for (auto i = 0u; i < MOTORS_COUNT; ++i)
-    {
-      wheels_state_msg.velocity.data[i] = (current_position[i] - wheels_state_msg.position.data[i]) / dt;
-      wheels_state_msg.position.data[i] = current_position[i];
-    }
+    wheels_state_msg.velocity.data[i] = (current_position[i] - wheels_state_msg.position.data[i]) / dt;
+    wheels_state_msg.position.data[i] = current_position[i];
   }
 }
 

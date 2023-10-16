@@ -239,31 +239,6 @@ bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id) {
     return true;
 }
 
-void fill_imu_msg(sensor_msgs__msg__Imu *msg) {
-    msg->header.frame_id = micro_ros_string_utilities_set(msg->header.frame_id, "imu");
-
-    if (rmw_uros_epoch_synchronized()) {
-        msg->header.stamp.sec = (int32_t)(rmw_uros_epoch_nanos() / 1000000000);
-        msg->header.stamp.nanosec = (uint32_t)(rmw_uros_epoch_nanos() % 1000000000);
-    }
-    msg->orientation.x = 0;
-    msg->orientation.y = 0;
-    msg->orientation.z = 0;
-    msg->orientation.w = 1;
-    msg->angular_velocity.x = 0;
-    msg->angular_velocity.y = 0;
-    msg->angular_velocity.z = 0;
-    msg->linear_acceleration.x = 0;
-    msg->linear_acceleration.y = 0;
-    msg->linear_acceleration.z = 0;
-    for (auto i = 0u; i < 9u; ++i) {
-        msg->angular_velocity_covariance[i] = msg->linear_acceleration_covariance[i] = msg->orientation_covariance[i] = 0.0;
-    }
-    msg->orientation_covariance[9] = 0.0;
-    msg->orientation_covariance[10] = 0.0;
-    msg->orientation_covariance[11] = 0.0;
-}
-
 void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg) {
     static uint32_t data[SERVOS_COUNT] = {0, 0, 0, 0, 0, 0};
     msg->data.capacity = SERVOS_COUNT;

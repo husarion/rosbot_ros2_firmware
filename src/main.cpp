@@ -12,14 +12,11 @@
 #define IMU_I2C_SCL SENS2_PIN3
 #define IMU_I2C_SDA SENS2_PIN4
 
-extern Mail<ImuDriver::ImuMeasurement, 10> imu_sensor_mail_box;
 
-const char* imu_sensor_type_string[] = { "BNO055_ADDR_A", "BNO055_ADDR_B", "MPU9250", "MPU9255", "BHI260", "UNKNOWN" };
-char imu_description_string[64] = "";
 
 volatile uint8_t err_msg;
+static volatile uint32_t spin_count;
 
-sensor_msgs__msg__Imu imu_msg;
 sensor_msgs__msg__Range range_msgs[RANGES_COUNT];
 
 static mbed::InterruptIn button1(BUTTON1);
@@ -98,18 +95,7 @@ void imu_msg_handler()
   {
     ImuDriver::ImuMeasurement* message = (ImuDriver::ImuMeasurement*)evt2.value.p;
     fill_imu_msg(&imu_msg);
-    imu_msg.orientation.y = message->orientation[1];
-    imu_msg.orientation.z = message->orientation[2];
-    imu_msg.orientation.x = message->orientation[0];
-    imu_msg.orientation.w = message->orientation[3];
-
-    imu_msg.angular_velocity.x = message->angular_velocity[0];
-    imu_msg.angular_velocity.y = message->angular_velocity[1];
-    imu_msg.angular_velocity.z = message->angular_velocity[2];
-
-    imu_msg.linear_acceleration.x = message->linear_acceleration[0];
-    imu_msg.linear_acceleration.y = message->linear_acceleration[1];
-    imu_msg.linear_acceleration.z = message->linear_acceleration[2];
+    fill_imu_msg_with_measurements(&imu_msg, message);
     publish_imu_msg(&imu_msg);
     imu_sensor_mail_box.free(message);
   }
@@ -144,7 +130,6 @@ void wheels_state_msg_handler()
     publish_wheels_state_msg(&wheels_state_msg);
   }
 }
-
 
 void servos_command_callback(const void* msgin)
 {
@@ -233,34 +218,16 @@ int main()
   init_button_and_attach_to_callbacks(&button1, button1_rise_callback, button1_fall_callback);
   init_button_and_attach_to_callbacks(&button2, button2_rise_callback, button2_fall_callback);
 
+  I2C* i2c_ptr = new I2C(IMU_I2C_SDA, IMU_I2C_SCL);
+  i2c_ptr->frequency(IMU_I2C_FREQUENCY);
+  init_imu(i2c_ptr);
+
   MultiDistanceSensor& distance_sensors = MultiDistanceSensor::getInstance();
-
   bool distance_sensors_init_flag = false;
-  bool imu_init_flag = false;
-
   int num_sens_init;
   if ((num_sens_init = distance_sensors.init()) > 0)
   {
     distance_sensors_init_flag = true;
-  }
-
-  I2C* i2c_ptr = new I2C(IMU_I2C_SDA, IMU_I2C_SCL);
-  i2c_ptr->frequency(IMU_I2C_FREQUENCY);
-
-  ImuDriver::Type type = ImuDriver::getType(i2c_ptr, 2);
-  sprintf(imu_description_string, "Detected sensor: %s\r\n", imu_sensor_type_string[type]);
-
-  if (type != ImuDriver::UNKNOWN)
-  {
-    imu_driver_ptr = new ImuDriver(i2c_ptr, type);
-    imu_driver_ptr->init();
-    imu_driver_ptr->start();
-    imu_init_flag = true;
-  }
-
-  if (imu_init_flag)
-  {
-    imu_driver_ptr->start();
   }
 
   if (distance_sensors_init_flag)
@@ -285,10 +252,6 @@ int main()
     NVIC_SystemReset();
   }
 
-  fill_imu_msg(&imu_msg);
-  fill_battery_msg(&battery_msg);
-  fill_wheels_state_msg(&wheels_state_msg);
-
   for (auto i = 0u; i < RANGES_COUNT; ++i)
   {
     fill_range_msg(&range_msgs[i], i);
@@ -301,6 +264,7 @@ int main()
                        state = (RMW_RET_OK == rmw_uros_ping_agent(200, 5)) ? AGENT_CONNECTED : AGENT_DISCONNECTED;);
     microros_spin();
   }
+
   for (int i = 0; i < 10; ++i)
   {
     ThisThread::sleep_for(200);

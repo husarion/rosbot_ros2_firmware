@@ -23,7 +23,6 @@ constexpr const char* REAR_RIGHT_MOTOR_NAME = "rr_wheel_joint";
 static volatile float last_wheels_speed_calc_time = 0.0;
 static volatile uint32_t last_speed_command_time = 0;
 static volatile bool is_speed_watchdog_active = false;
-static volatile uint32_t spin_count;
 static volatile uint64_t speed_watchdog_interval = 1000;  // ms
 
 static mbed::Timer odom_watchdog_timer;

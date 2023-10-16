@@ -2,6 +2,12 @@
 
 sensor_msgs__msg__BatteryState battery_msg;
 
+void init_battery()
+{
+  read_battery_voltage_and_show_status_thead.start(read_battery_voltage_and_show_status_task);
+  fill_battery_msg(&battery_msg);
+}
+
 void read_battery_voltage_and_show_status_task()
 {
   while (true)
@@ -9,11 +15,6 @@ void read_battery_voltage_and_show_status_task()
     battery_msg.voltage = read_battery_voltage_and_show_status();
     ThisThread::sleep_for(100);
   }
-}
-
-void init_battery()
-{
-  read_battery_voltage_and_show_status_thead.start(read_battery_voltage_and_show_status_task);
 }
 
 static void toggle_battery_led()
