@@ -2,7 +2,6 @@
 
 std_msgs__msg__Float32MultiArray wheels_command_msg;
 
-
 void init_wheels()
 {
   odom_watchdog_timer.start();
@@ -83,16 +82,12 @@ void wheels_command_callback(const void* message)
 
 void check_speed_watchdog()
 {
-  if (is_speed_watchdog_enabled)
+  if (!is_speed_watchdog_active && (odom_watchdog_timer.read_ms() - last_speed_command_time) > speed_watchdog_interval)
   {
-    if (!is_speed_watchdog_active &&
-        (odom_watchdog_timer.read_ms() - last_speed_command_time) > speed_watchdog_interval)
-    {
-      RosbotDrive& drive = RosbotDrive::getInstance();
-      NewTargetSpeed new_speed = { .speed = { 0.0, 0.0, 0.0, 0.0 }, .mode = MPS };
-      drive.updateTargetSpeed(new_speed);
-      is_speed_watchdog_active = true;
-    }
+    RosbotDrive& drive = RosbotDrive::getInstance();
+    NewTargetSpeed new_speed = { .speed = { 0.0, 0.0, 0.0, 0.0 }, .mode = MPS };
+    drive.updateTargetSpeed(new_speed);
+    is_speed_watchdog_active = true;
   }
 }
 
@@ -138,9 +133,10 @@ void fill_wheels_state_msg(sensor_msgs__msg__JointState* msg)
   }
 }
 
-void fill_wheels_command_msg(std_msgs__msg__Float32MultiArray *msg) {
-    static float data[MOTORS_COUNT] = {0, 0, 0, 0};
-    msg->data.capacity = MOTORS_COUNT;
-    msg->data.size = 0;
-    msg->data.data = (float *)data;
+void fill_wheels_command_msg(std_msgs__msg__Float32MultiArray* msg)
+{
+  static float data[MOTORS_COUNT] = { 0, 0, 0, 0 };
+  msg->data.capacity = MOTORS_COUNT;
+  msg->data.size = 0;
+  msg->data.data = (float*)data;
 }

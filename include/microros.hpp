@@ -11,12 +11,12 @@
 #include <sensor_msgs/msg/imu.h>
 #include <sensor_msgs/msg/range.h>
 #include <std_msgs/msg/u_int32_multi_array.h>
-#include <std_msgs/msg/bool.h>
 #include <microros_transport/mbed_serial_transport.hpp>
 #include <rclc_parameter/rclc_parameter.h>
 
 #include <leds.hpp>
 #include <wheels.hpp>
+#include <buttons.hpp>
 
 constexpr const uint8_t UXR_CLIENT_DOMAIN_ID_TO_OVERRIDE_WITH_ENV = 255;
 
@@ -26,12 +26,6 @@ constexpr const char *WHEELS_STATE_TOPIC_NAME = "_motors_response";
 constexpr const char *WHEELS_COMMAND_TOPIC_NAME = "_motors_cmd";
 constexpr const char *BATTERY_TOPIC_NAME = "battery";
 constexpr const char *SERVOS_COMMAND_TOPIC_NAME = "cmd_ser";
-
-enum Buttons{
-    button_left,
-    button_right,
-    BUTTONS_COUNT
-};
 
 enum Ranges {
     range_right_front,
@@ -94,7 +88,6 @@ bool init_led_subscribers();
 bool init_param_server();
 bool init_parameters();
 
-void fill_wheels_state_msg(sensor_msgs__msg__JointState *msg);
 void fill_imu_msg(sensor_msgs__msg__Imu *msg);
 void fill_battery_msg(sensor_msgs__msg__BatteryState *msg);
 void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg);
