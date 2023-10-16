@@ -9,8 +9,6 @@
 #include <sensor_msgs/msg/joint_state.h>
 #include <std_msgs/msg/float32_multi_array.h>
 
-// #include "leds.hpp"
-
 // Motors setup
 #define MOTOR_FR MOTOR1
 #define MOTOR_FL MOTOR4

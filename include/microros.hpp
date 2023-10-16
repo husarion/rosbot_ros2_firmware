@@ -7,7 +7,6 @@
 #include <rclc/executor.h>
 #include <rclc/rclc.h>
 #include <rmw_microros/rmw_microros.h>
-#include <sensor_msgs/msg/battery_state.h>
 #include <sensor_msgs/msg/imu.h>
 #include <sensor_msgs/msg/range.h>
 #include <std_msgs/msg/u_int32_multi_array.h>
@@ -17,6 +16,7 @@
 #include <leds.hpp>
 #include <wheels.hpp>
 #include <buttons.hpp>
+#include <battery.hpp>
 
 constexpr const uint8_t UXR_CLIENT_DOMAIN_ID_TO_OVERRIDE_WITH_ENV = 255;
 
@@ -89,7 +89,6 @@ bool init_param_server();
 bool init_parameters();
 
 void fill_imu_msg(sensor_msgs__msg__Imu *msg);
-void fill_battery_msg(sensor_msgs__msg__BatteryState *msg);
 void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg);
 void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
 

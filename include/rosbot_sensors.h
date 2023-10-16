@@ -1,12 +1,11 @@
-#ifndef __ROSBOT_SENSORS_H__
-#define __ROSBOT_SENSORS_H__
+#pragma once
 
 #include <mbed.h>
 #include <MultiDistanceSensor.h>
 
 namespace rosbot_sensors{
 
-float updateBatteryWatchdog();
+
 
 class ServoManger : NonCopyable<ServoManger>
 {
@@ -23,7 +22,7 @@ public:
         VOLTAGE_5V = 0,
         VOLTAGE_6V = 1,
         VOLTAGE_7_4V = 2,
-        VOLTAGE_8_6V = 3, 
+        VOLTAGE_8_6V = 3,
     };
 
     ServoManger()
@@ -81,7 +80,7 @@ public:
     {
         if(output < SERVO_OUTPUT_1 || output > SERVO_OUTPUT_6)
             return;
-        
+
         if(en && _servo[output] == nullptr)
         {
             switch (output)
@@ -131,5 +130,3 @@ private:
 };
 
 }
-
-#endif /* __ROSBOT_SENSORS_H__ */

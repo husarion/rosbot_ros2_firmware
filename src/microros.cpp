@@ -264,17 +264,6 @@ void fill_imu_msg(sensor_msgs__msg__Imu *msg) {
     msg->orientation_covariance[11] = 0.0;
 }
 
-void fill_battery_msg(sensor_msgs__msg__BatteryState *msg) {
-    msg->header.frame_id = micro_ros_string_utilities_set(msg->header.frame_id, "battery");
-
-    if (rmw_uros_epoch_synchronized()) {
-        msg->header.stamp.sec = (int32_t)(rmw_uros_epoch_nanos() / 1000000000);
-        msg->header.stamp.nanosec = (uint32_t)(rmw_uros_epoch_nanos() % 1000000000);
-    }
-
-    msg->power_supply_technology = sensor_msgs__msg__BatteryState__POWER_SUPPLY_TECHNOLOGY_LION;
-}
-
 void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg) {
     static uint32_t data[SERVOS_COUNT] = {0, 0, 0, 0, 0, 0};
     msg->data.capacity = SERVOS_COUNT;

@@ -9,10 +9,6 @@
 static UARTSerial microros_serial(RPI_SERIAL_TX, RPI_SERIAL_RX);
 
 static volatile bool distance_sensors_enabled = false;
-
-
-static volatile float battery_voltage = 0.0;
-
 static DigitalOut sens_power(SENS_POWER_ON, 0);
 
 static ImuDriver *imu_driver_ptr;

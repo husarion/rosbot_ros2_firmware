@@ -21,7 +21,6 @@ char imu_description_string[64] = "";
 volatile uint8_t err_msg;
 
 sensor_msgs__msg__Imu imu_msg;
-sensor_msgs__msg__BatteryState battery_msg;
 sensor_msgs__msg__Range range_msgs[RANGES_COUNT];
 
 static mbed::InterruptIn button1(BUTTON1);
@@ -122,7 +121,6 @@ void battery_msg_handler()
   if (spin_count % 40 == 0)
   {
     fill_battery_msg(&battery_msg);
-    battery_msg.voltage = battery_voltage;
     publish_battery_msg(&battery_msg);
   }
 }
@@ -148,10 +146,6 @@ void wheels_state_msg_handler()
   }
 }
 
-void read_and_show_battery_state()
-{
-  battery_voltage = rosbot_sensors::updateBatteryWatchdog();
-}
 
 void servos_command_callback(const void* msgin)
 {
@@ -235,6 +229,7 @@ int main()
   ThisThread::sleep_for(100);
   sens_power = 1;  // sensors power on
   ThisThread::sleep_for(100);
+  init_battery();
   init_wheels();
   init_button_and_attach_to_callbacks(&button1, button1_rise_callback, button1_fall_callback);
   init_button_and_attach_to_callbacks(&button2, button2_rise_callback, button2_fall_callback);
@@ -277,12 +272,9 @@ int main()
     distance_sensors_enabled = true;
   }
 
-  read_and_show_battery_state();
-
   set_microros_serial_transports(&microros_serial);
   while (not rmw_uros_ping_agent(100, 1) == RMW_RET_OK)
   {
-    read_and_show_battery_state();
     ThisThread::sleep_for(100);
   }
 
