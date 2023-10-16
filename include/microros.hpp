@@ -17,6 +17,7 @@
 #include <wheels.hpp>
 #include <buttons.hpp>
 #include <battery.hpp>
+#include <servos.hpp>
 
 constexpr const uint8_t UXR_CLIENT_DOMAIN_ID_TO_OVERRIDE_WITH_ENV = 255;
 

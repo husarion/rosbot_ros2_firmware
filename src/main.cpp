@@ -4,7 +4,6 @@
  * @author Husarion
  * @copyright MIT
  */
-#include <rosbot_sensors.h>
 
 #include <main.hpp>
 

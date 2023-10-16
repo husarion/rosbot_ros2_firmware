@@ -1,6 +1,7 @@
 #pragma once
 
-#include <rosbot_sensors.h>
+#include <mbed.h>
+
 #include <sensor_msgs/msg/battery_state.h>
 #include <rmw_microros/rmw_microros.h>
 #include <micro_ros_utilities/string_utilities.h>

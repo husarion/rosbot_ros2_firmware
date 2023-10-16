@@ -1,4 +1,5 @@
 #include <battery.hpp>
+
 sensor_msgs__msg__BatteryState battery_msg;
 
 void read_battery_voltage_and_show_status_task()
