@@ -15,8 +15,6 @@
 volatile uint8_t err_msg;
 static volatile uint32_t spin_count;
 
-sensor_msgs__msg__Range range_msgs[RANGES_COUNT];
-
 static mbed::InterruptIn button1(BUTTON1);
 static mbed::InterruptIn button2(BUTTON2);
 
@@ -65,7 +63,7 @@ void range_sensors_msg_handler()
       err_msg = 0;
       for (auto i = 0u; i < RANGES_COUNT; ++i)
       {
-        range_msgs[i].range = message->range[i];
+        fill_range_msg_with_measurements(&range_msgs[i], message->range[i]);
       }
     }
     distance_sensor_mail_box.free(message);
@@ -208,22 +206,7 @@ int main()
   i2c_ptr->frequency(IMU_I2C_FREQUENCY);
   init_imu(i2c_ptr);
   init_servos();
-
-  MultiDistanceSensor& distance_sensors = MultiDistanceSensor::getInstance();
-  bool distance_sensors_init_flag = false;
-  int num_sens_init;
-  if ((num_sens_init = distance_sensors.init()) > 0)
-  {
-    distance_sensors_init_flag = true;
-  }
-
-  if (distance_sensors_init_flag)
-  {
-    uint8_t* data = distance_sensor_commands.alloc();
-    *data = 1;
-    distance_sensor_commands.put(data);
-    distance_sensors_enabled = true;
-  }
+  init_ranges();
 
   set_microros_serial_transports(&microros_serial);
   while (not rmw_uros_ping_agent(100, 1) == RMW_RET_OK)
@@ -237,11 +220,6 @@ int main()
     ThisThread::sleep_for(2000);
 
     NVIC_SystemReset();
-  }
-
-  for (auto i = 0u; i < RANGES_COUNT; ++i)
-  {
-    fill_range_msg(&range_msgs[i], i);
   }
 
   AgentStates state = AGENT_CONNECTED;

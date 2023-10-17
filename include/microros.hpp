@@ -7,7 +7,6 @@
 #include <rclc/executor.h>
 #include <rclc/rclc.h>
 #include <rmw_microros/rmw_microros.h>
-#include <sensor_msgs/msg/range.h>
 #include <microros_transport/mbed_serial_transport.hpp>
 #include <rclc_parameter/rclc_parameter.h>
 
@@ -17,6 +16,7 @@
 #include <battery.hpp>
 #include <servos.hpp>
 #include <imu.hpp>
+#include <ranges.hpp>
 
 constexpr const uint8_t UXR_CLIENT_DOMAIN_ID_TO_OVERRIDE_WITH_ENV = 255;
 
@@ -26,14 +26,6 @@ constexpr const char *WHEELS_STATE_TOPIC_NAME = "_motors_response";
 constexpr const char *WHEELS_COMMAND_TOPIC_NAME = "_motors_cmd";
 constexpr const char *BATTERY_TOPIC_NAME = "battery";
 constexpr const char *SERVOS_COMMAND_TOPIC_NAME = "cmd_ser";
-
-enum Ranges {
-    range_right_front,
-    range_left_front,
-    range_right_rear,
-    range_left_rear,
-    RANGES_COUNT
-};
 
 enum AgentStates {
     WAITING_AGENT,
@@ -75,8 +67,6 @@ bool init_button_publishers();
 bool init_led_subscribers();
 bool init_param_server();
 bool init_parameters();
-
-void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
 
 bool publish_imu_msg(sensor_msgs__msg__Imu *imu_msg);
 bool publish_wheels_state_msg(sensor_msgs__msg__JointState *msg);

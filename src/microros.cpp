@@ -22,14 +22,11 @@ rclc_parameter_server_t param_server;
 
 std_msgs__msg__Bool led_msg;
 
-const char *range_frame_names[] = {"fr_range", "fl_range", "rr_range", "rl_range"};
 const char *range_pub_names[] = {"range/fr", "range/fl", "range/rr", "range/rl"};
 const char *buttons_pub_names[] = {"button/left", "button/right"};
 const char *led_subs_names[] = {"led/left", "led/right"};
 
 extern void timer_callback(rcl_timer_t *timer, int64_t last_call_time);
-// extern void wheels_command_callback(const void *msgin);
-extern void servos_command_callback(const void *msgin);
 
 extern void publish_range_sensors(rcl_timer_t *timer, int64_t last_call_time);
 extern bool on_parameter_changed(const Parameter * old_param, const Parameter * new_param, void * context);
@@ -234,21 +231,4 @@ bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
 bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id) {
     RCCHECK(rcl_publish(&buttons_pubs[id], msg, NULL));
     return true;
-}
-
-void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
-    msg->header.frame_id = micro_ros_string_utilities_set(msg->header.frame_id, range_frame_names[id]);
-
-    if (rmw_uros_epoch_synchronized()) {
-        msg->header.stamp.sec = (int32_t)(rmw_uros_epoch_nanos() / 1000000000);
-        msg->header.stamp.nanosec = (uint32_t)(rmw_uros_epoch_nanos() % 1000000000);
-    }
-
-    msg->radiation_type = sensor_msgs__msg__Range__INFRARED;
-    msg->field_of_view = 0.26;
-    msg->min_range = 0.01;
-    msg->max_range = 0.90;
-    if(msg->range > msg->max_range || msg->range < msg->min_range){
-        msg->range = NAN;
-    }
 }
