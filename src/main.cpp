@@ -12,8 +12,6 @@
 #define IMU_I2C_SCL SENS2_PIN3
 #define IMU_I2C_SDA SENS2_PIN4
 
-
-
 volatile uint8_t err_msg;
 static volatile uint32_t spin_count;
 
@@ -131,18 +129,6 @@ void wheels_state_msg_handler()
   }
 }
 
-void servos_command_callback(const void* msgin)
-{
-  const std_msgs__msg__UInt32MultiArray* msg = (const std_msgs__msg__UInt32MultiArray*)msgin;
-  if (msg != NULL and msg->data.size == SERVOS_COUNT)
-  {
-    for (auto i = 0u; i < SERVOS_COUNT; ++i)
-    {
-      servo_manager.setWidth(i, msg->data.data[i]);
-    }
-  }
-}
-
 void timer_callback(rcl_timer_t* timer, int64_t last_call_time)
 {
   RCLC_UNUSED(last_call_time);
@@ -221,6 +207,7 @@ int main()
   I2C* i2c_ptr = new I2C(IMU_I2C_SDA, IMU_I2C_SCL);
   i2c_ptr->frequency(IMU_I2C_FREQUENCY);
   init_imu(i2c_ptr);
+  init_servos();
 
   MultiDistanceSensor& distance_sensors = MultiDistanceSensor::getInstance();
   bool distance_sensors_init_flag = false;

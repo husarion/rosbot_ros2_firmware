@@ -8,7 +8,6 @@
 #include <rclc/rclc.h>
 #include <rmw_microros/rmw_microros.h>
 #include <sensor_msgs/msg/range.h>
-#include <std_msgs/msg/u_int32_multi_array.h>
 #include <microros_transport/mbed_serial_transport.hpp>
 #include <rclc_parameter/rclc_parameter.h>
 
@@ -36,24 +35,12 @@ enum Ranges {
     RANGES_COUNT
 };
 
-enum Servos{
-    servo0,
-    servo1,
-    servo2,
-    servo3,
-    servo4,
-    servo5,
-    SERVOS_COUNT
-};
-
-
 enum AgentStates {
     WAITING_AGENT,
     AGENT_AVAILABLE,
     AGENT_CONNECTED,
     AGENT_DISCONNECTED
 };
-
 
 bool microros_deinit();
 
@@ -89,7 +76,6 @@ bool init_led_subscribers();
 bool init_param_server();
 bool init_parameters();
 
-void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg);
 void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
 
 bool publish_imu_msg(sensor_msgs__msg__Imu *imu_msg);

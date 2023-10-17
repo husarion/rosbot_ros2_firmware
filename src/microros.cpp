@@ -20,7 +20,6 @@ rcl_subscription_t led_subs[LED_COUNT];
 
 rclc_parameter_server_t param_server;
 
-std_msgs__msg__UInt32MultiArray servos_command_msg;
 std_msgs__msg__Bool led_msg;
 
 const char *range_frame_names[] = {"fr_range", "fl_range", "rr_range", "rl_range"};
@@ -36,8 +35,6 @@ extern void publish_range_sensors(rcl_timer_t *timer, int64_t last_call_time);
 extern bool on_parameter_changed(const Parameter * old_param, const Parameter * new_param, void * context);
 
 bool microros_init() {
-    fill_servos_command_msg(&servos_command_msg);
-
     rcl_allocator = rcl_get_default_allocator();
 
     rcl_init_options_t init_options = rcl_get_zero_initialized_init_options();
@@ -237,13 +234,6 @@ bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
 bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id) {
     RCCHECK(rcl_publish(&buttons_pubs[id], msg, NULL));
     return true;
-}
-
-void fill_servos_command_msg(std_msgs__msg__UInt32MultiArray *msg) {
-    static uint32_t data[SERVOS_COUNT] = {0, 0, 0, 0, 0, 0};
-    msg->data.capacity = SERVOS_COUNT;
-    msg->data.size = 0;
-    msg->data.data = (uint32_t *)data;
 }
 
 void fill_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
