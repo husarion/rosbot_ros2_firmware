@@ -1,7 +1,3 @@
-[submodule "ros_lib"]
-	path = lib/ros_lib
-	url = https://github.com/byq77/rosserial-mbed.git
-	branch = master
 [submodule "encoder-mbed"]
 	path = lib/encoder-mbed
 	url = https://github.com/byq77/encoder-mbed.git
@@ -10,11 +6,10 @@
 	path = lib/motor-driver-mbed
 	url = https://github.com/byq77/drv88xx-driver-mbed.git
 	branch = master
-[submodule "imu-driver"]
-	path = lib/imu-driver
-	url = https://github.com/byq77/core2-imu-driver.git
-	branch = master
 [submodule "vl53l0x-mbed"]
 	path = lib/vl53l0x-mbed
 	url = https://github.com/byq77/vl53l0x-mbed.git
 	branch = master
+[submodule "lib/imu-driver"]
+	path = lib/imu-driver
+	url = https://github.com/delihus/core2-imu-driver-mbed
