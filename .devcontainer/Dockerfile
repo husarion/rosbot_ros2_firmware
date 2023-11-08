@@ -2,6 +2,7 @@ FROM python:3.9-slim AS stm32flash_builder
 
 
 ARG USERNAME=runner
+ENV USER=runner
 ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 
@@ -31,3 +32,5 @@ RUN git clone https://github.com/husarion/flasher && \
 # Build stm32 flasher
 RUN git clone https://github.com/husarion/stm32loader && \
     cd stm32loader && sudo python setup.py install
+
+SHELL ["/bin/bash", "-c"]

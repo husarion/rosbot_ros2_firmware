@@ -1,5 +1,8 @@
 import os
 user_name = os.getenv('USER')
+if user_name == None:
+    print("There is no global variable 'USER'!!!")
+    exit(-1)
 try:
     os.makedirs(f'/home/{user_name}/.platformio/packages/framework-mbed/features/')
 except FileExistsError:
