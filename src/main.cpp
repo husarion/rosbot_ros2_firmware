@@ -214,25 +214,36 @@ int main()
   std::srand(std::time(nullptr)); // Seed the random number generator
   if (std::rand() % 2 == 0)
   {
+    led2=0;
+    led3=1;
     set_microros_serial_transports(&microros_serial_rpi);
   }
   else
   {
+    led2=1;
+    led3=0;
     set_microros_serial_transports(&microros_serial_ftdi);
   }
 
+  uint32_t cnt=0;
   while (not rmw_uros_ping_agent(100, 1) == RMW_RET_OK)
   {
     ThisThread::sleep_for(100);
+    cnt++;
+    if (cnt == 10) {
+       NVIC_SystemReset();
+    }
   }
 
   if (not microros_init())
   {
     microros_deinit();
     ThisThread::sleep_for(2000);
-
     NVIC_SystemReset();
   }
+
+  led2=0;
+  led3=0;
 
   AgentStates state = AGENT_CONNECTED;
   while (state == AGENT_CONNECTED)
