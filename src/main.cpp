@@ -208,7 +208,7 @@ int main()
   init_servos();
   init_ranges();
 
-
+  // if button1 or button2 are pressed, connect through USB
   if (button1.read() == true && button2.read() == true)
   {
     led2=0;
