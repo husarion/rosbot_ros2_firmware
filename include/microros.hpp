@@ -27,7 +27,7 @@ constexpr const char *WHEELS_COMMAND_TOPIC_NAME = "_motors_cmd";
 constexpr const char *BATTERY_TOPIC_NAME = "battery";
 constexpr const char *SERVOS_COMMAND_TOPIC_NAME = "cmd_ser";
 
-constexpr const char *GET_CPU_ID_SERVICE_NAME = "get_cpu_id";
+constexpr const char *GET_CPU_ID_SERVICE_NAME = "/get_cpu_id";
 
 enum AgentStates {
     WAITING_AGENT,
