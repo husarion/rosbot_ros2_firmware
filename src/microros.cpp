@@ -47,15 +47,15 @@ bool microros_init() {
 
     RCCHECK(rclc_node_init_default(&node, NODE_NAME, "", &support));
 
-    if (/*not init_wheels_command_subscriber() or
-        not init_servos_command_subscriber() or
+    if (not init_wheels_command_subscriber() or
         not init_wheels_state_publisher() or
+        not init_servos_command_subscriber() or
         not init_imu_publisher() or
         not init_battery_publisher() or
         not init_range_publishers() or
         not init_button_publishers() or
         not init_led_subscribers() or
-        not init_param_server() or
+        /*not init_param_server() or
         not init_parameters() or*/
         not init_services()) {
         return false;
@@ -70,14 +70,14 @@ bool microros_init() {
     RCCHECK(rclc_executor_add_timer(&executor, &timer));
     RCCHECK(rclc_executor_add_timer(&executor, &range_timer));
 
-    // RCCHECK(rclc_executor_add_subscription(&executor, &wheels_command_sub, &wheels_command_msg,
-    //                                        &wheels_command_callback, ON_NEW_DATA));
-    // RCCHECK(rclc_executor_add_subscription(&executor, &servos_command_sub, &servos_command_msg,
-    //                                        &servos_command_callback, ON_NEW_DATA));
-    // RCCHECK(rclc_executor_add_subscription(&executor, &led_subs[0], &led_msg,
-    //                                        &led1_callback, ON_NEW_DATA));
-    // RCCHECK(rclc_executor_add_subscription(&executor, &led_subs[1], &led_msg,
-    //                                        &led2_callback, ON_NEW_DATA));
+    RCCHECK(rclc_executor_add_subscription(&executor, &wheels_command_sub, &wheels_command_msg,
+                                           &wheels_command_callback, ON_NEW_DATA));
+    RCCHECK(rclc_executor_add_subscription(&executor, &servos_command_sub, &servos_command_msg,
+                                           &servos_command_callback, ON_NEW_DATA));
+    RCCHECK(rclc_executor_add_subscription(&executor, &led_subs[0], &led_msg,
+                                           &led1_callback, ON_NEW_DATA));
+    RCCHECK(rclc_executor_add_subscription(&executor, &led_subs[1], &led_msg,
+                                           &led2_callback, ON_NEW_DATA));
     // RCCHECK(rclc_executor_add_parameter_server(&executor, &param_server, on_parameter_changed));
     RCCHECK(rclc_executor_add_service(&executor, &get_cpu_id_service, &get_cpu_id_service_request, &get_cpu_id_service_response, get_cpu_id_service_callback)); 
 
@@ -255,35 +255,6 @@ bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id) {
     RCCHECK(rcl_publish(&buttons_pubs[id], msg, NULL));
     return true;
 }
-
-// void get_cpu_id_service_callback(const void *req, void *res) {
-//     (void)req; // Unused parameter
-
-//     const uint32_t ADDRESS = 0x1FFF7A10;
-//     const uint8_t NUM_BYTES = 12;
-//     uint8_t buffer[NUM_BYTES];
-//     memcpy(buffer, (void *)ADDRESS, NUM_BYTES);
-
-//     // Prepare the CPU ID in hexadecimal format
-//     char cpu_id_buffer[NUM_BYTES * 2 + 1] = {0};
-//     char *hex_ptr = cpu_id_buffer;
-//     for (uint8_t i = 0; i < NUM_BYTES; ++i) {
-//         snprintf(hex_ptr, 3, "%02X", buffer[i]);
-//         hex_ptr += 2;
-//     }
-
-//     // Prepare the final output buffer with "CPU ID: " prefix
-//     static char out_buffer[100]; // Ensure this is large enough
-//     snprintf(out_buffer, sizeof(out_buffer), "CPU ID: %s", cpu_id_buffer);
-
-//     // Set the response
-//     std_srvs__srv__Trigger_Response *response = (std_srvs__srv__Trigger_Response *)res;
-//     response->success = true;
-//     // Ensure the response data size does not exceed its buffer size
-//     strncpy(response->message.data, out_buffer, sizeof(response->message.data) - 1);
-//     response->message.data[sizeof(response->message.data) - 1] = '\0'; // Null-terminate
-//     response->message.size = strlen(response->message.data);
-// }
 
 void get_cpu_id_service_callback(const void *req, void *res) {
     (void)req; // Unused parameter
