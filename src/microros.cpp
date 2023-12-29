@@ -1,4 +1,5 @@
 #include <microros.hpp>
+#include <std_srvs/srv/trigger.h>
 
 rclc_executor_t executor;
 rclc_support_t support;
@@ -18,9 +19,14 @@ rcl_subscription_t wheels_command_sub;
 rcl_subscription_t servos_command_sub;
 rcl_subscription_t led_subs[LED_COUNT];
 
+rcl_service_t get_cpu_id_service;
+
 rclc_parameter_server_t param_server;
 
 std_msgs__msg__Bool led_msg;
+
+std_srvs__srv__Trigger_Request get_cpu_id_service_request;
+std_srvs__srv__Trigger_Response get_cpu_id_service_response;
 
 const char *range_pub_names[] = {"range/fr", "range/fl", "range/rr", "range/rl"};
 const char *buttons_pub_names[] = {"button/left", "button/right"};
@@ -50,7 +56,8 @@ bool microros_init() {
         not init_button_publishers() or
         not init_led_subscribers() or
         not init_param_server() or
-        not init_parameters()) {
+        not init_parameters() or
+        not init_services()) {
         return false;
     }
 
@@ -72,6 +79,7 @@ bool microros_init() {
     RCCHECK(rclc_executor_add_subscription(&executor, &led_subs[1], &led_msg,
                                            &led2_callback, ON_NEW_DATA));
     RCCHECK(rclc_executor_add_parameter_server(&executor, &param_server, on_parameter_changed));
+    RCCHECK(rclc_executor_add_service(&executor, &get_cpu_id_service, &get_cpu_id_service_request, &get_cpu_id_service_response, get_cpu_id_service_callback)); 
 
     RCCHECK(rclc_executor_prepare(&executor));
     RCCHECK(rmw_uros_sync_session(1000));
@@ -97,6 +105,7 @@ bool microros_deinit() {
         RCCHECK(rcl_publisher_fini(&buttons_pubs[i], &node));
     }
     RCCHECK(rclc_parameter_server_fini(&param_server, &node));
+
     RCCHECK(rclc_executor_fini(&executor));
     RCCHECK(rcl_node_fini(&node));
     return true;
@@ -208,6 +217,20 @@ bool init_parameters(){
     return true;
 }
 
+bool init_services() {
+    std_srvs__srv__Trigger_Request__init(&get_cpu_id_service_request);
+    std_srvs__srv__Trigger_Response__init(&get_cpu_id_service_response);
+
+    RCCHECK(rclc_service_init_default(
+        &get_cpu_id_service,
+        &node,
+        ROSIDL_GET_SRV_TYPE_SUPPORT(std_srvs, srv, Trigger),
+        GET_CPU_ID_SERVICE_NAME
+    ));
+
+    return true;
+}
+
 bool publish_wheels_state_msg(sensor_msgs__msg__JointState *msg) {
     RCCHECK(rcl_publish(&wheels_state_pub, msg, NULL));
     return true;
@@ -231,4 +254,23 @@ bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
 bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id) {
     RCCHECK(rcl_publish(&buttons_pubs[id], msg, NULL));
     return true;
+}
+
+void get_cpu_id_service_callback(const void *req, void *res) {
+    (void)req; // Unused parameter
+
+    std_srvs__srv__Trigger_Response *response = (std_srvs__srv__Trigger_Response *)res;
+    // Here, you'll need to implement the logic to retrieve the CPU ID
+    // char cpu_id[20]; // Adjust size as needed
+    // if (read_cpu_id(cpu_id)) { // Implement this function according to your hardware
+    //     response->success = true;
+    //     snprintf(response->message.data, sizeof(response->message.data), "CPU ID: %s", cpu_id);
+    // } else {
+    //     response->success = false;
+    //     snprintf(response->message.data, sizeof(response->message.data), "Failed to read CPU ID");
+    // }
+    char cpu_id[]="dupa";
+    response->success = true;
+    response->message.data = cpu_id;
+    response->message.size = sizeof(cpu_id);
 }
