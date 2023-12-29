@@ -7,9 +7,6 @@
 
 #include <main.hpp>
 
-#include <cstdlib>
-#include <ctime>
-
 #define MAIN_LOOP_INTERVAL_MS 10
 #define IMU_I2C_FREQUENCY 100000L
 #define IMU_I2C_SCL SENS2_PIN3
@@ -211,8 +208,8 @@ int main()
   init_servos();
   init_ranges();
 
-  std::srand(std::time(nullptr)); // Seed the random number generator
-  if (std::rand() % 2 == 0)
+
+  if (button1.read() == true && button2.read() == true)
   {
     led2=0;
     led3=1;
@@ -230,7 +227,7 @@ int main()
   {
     ThisThread::sleep_for(100);
     cnt++;
-    if (cnt == 10) {
+    if (cnt == 30) {
        NVIC_SystemReset();
     }
   }
