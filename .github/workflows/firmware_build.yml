@@ -10,14 +10,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Installing platformio
-      run: pip3 install -U platformio
+    # - name: Installing platformio
+    #   run: pip3 install -U platformio
 
-    - name: Virutalnenv install
-      run: |
-        python3 -m venv /home/runner/.platformio/penv
-  
-  # source /home/runner/.platformio/penv/bin/activate
+    # - name: Building a firmware for STM32
+    #   run: git submodule update --init --recursive && pio run
 
     - name: Building a firmware for STM32
-      run: git submodule update --init --recursive && pio run
+      run: docker compose up

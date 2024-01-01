@@ -54,11 +54,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Installing platformio
-      run: pip3 install -U platformio
+    # - name: Installing platformio
+    #   run: pip3 install -U platformio
+
+    # - name: Building a firmware for STM32
+    #   run: git submodule update --init --recursive && pio run
 
     - name: Building a firmware for STM32
-      run: git submodule update --init --recursive && pio run
+      run: docker compose up
 
     - name: Release a firmware
       uses: softprops/action-gh-release@v1
