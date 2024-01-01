@@ -14,7 +14,7 @@ jobs:
       run: |
         python3 -m venv /home/runner/.platformio/penv
         source /home/runner/.platformio/penv/bin/activate
-        pip install catkin_pkg
+        pip install catkin_pkg empy
 
     - name: Installing platformio
       run: pip3 install -U platformio
