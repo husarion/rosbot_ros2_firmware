@@ -10,6 +10,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
     - name: Installing platformio
       run: pip3 install -U platformio
 
@@ -17,7 +22,8 @@ jobs:
       run: |
         python3 -m venv /home/runner/.platformio/penv
         source /home/runner/.platformio/penv/bin/activate
-        pip install catkin_pkg
+        pip install catkin_pkg empy
+        pip install --upgrade pip setuptools
 
     - name: Building a firmware for STM32
       run: git submodule update --init --recursive && pio run
