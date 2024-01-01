@@ -17,4 +17,7 @@ jobs:
     #   run: git submodule update --init --recursive && pio run
 
     - name: Building a firmware for STM32
-      run: docker compose up
+      run: |
+        set -e
+        docker compose build --no-cache
+        docker compose up
