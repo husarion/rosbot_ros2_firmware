@@ -55,8 +55,8 @@ bool microros_init() {
         not init_range_publishers() or
         not init_button_publishers() or
         not init_led_subscribers() or
-        /*not init_param_server() or
-        not init_parameters() or*/
+        not init_param_server() or
+        not init_parameters() or
         not init_services()) {
         return false;
     }
@@ -66,7 +66,7 @@ bool microros_init() {
     RCCHECK(rclc_timer_init_default(&range_timer, &support, RCL_MS_TO_NS( 200  ),
                                     publish_range_sensors));
 
-    RCCHECK(rclc_executor_init(&executor, &support.context, 11, &rcl_allocator));
+    RCCHECK(rclc_executor_init(&executor, &support.context, 12, &rcl_allocator));
     RCCHECK(rclc_executor_add_timer(&executor, &timer));
     RCCHECK(rclc_executor_add_timer(&executor, &range_timer));
 
@@ -78,7 +78,7 @@ bool microros_init() {
                                            &led1_callback, ON_NEW_DATA));
     RCCHECK(rclc_executor_add_subscription(&executor, &led_subs[1], &led_msg,
                                            &led2_callback, ON_NEW_DATA));
-    // RCCHECK(rclc_executor_add_parameter_server(&executor, &param_server, on_parameter_changed));
+    RCCHECK(rclc_executor_add_parameter_server(&executor, &param_server, on_parameter_changed));
     RCCHECK(rclc_executor_add_service(&executor, &get_cpu_id_service, &get_cpu_id_service_request, &get_cpu_id_service_response, get_cpu_id_service_callback)); 
 
     RCCHECK(rclc_executor_prepare(&executor));

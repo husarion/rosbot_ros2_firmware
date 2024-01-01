@@ -197,6 +197,7 @@ int main()
   ThisThread::sleep_for(100);
   sens_power = 1; // sensors power on
   ThisThread::sleep_for(100);
+
   init_battery();
   init_wheels();
   init_button_and_attach_to_callbacks(&button1, button1_rise_callback, button1_fall_callback);
