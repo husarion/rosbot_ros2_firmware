@@ -10,6 +10,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Virutalnenv install
+      run: |
+        pip install --upgrade virtualenv
+        virtualenv -p python3 venv
+
     - name: Installing platformio
       run: pip3 install -U platformio
 
