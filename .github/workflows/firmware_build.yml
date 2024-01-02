@@ -5,13 +5,20 @@ on:
 jobs:
   firmware-build:
     name: Firmware build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+      with:
+        submodules: true
+    # - name: Installing platformio
+    #   run: pip3 install -U platformio
 
-    - name: Installing platformio
-      run: pip3 install -U platformio
+    # - name: Building a firmware for STM32
+    #   run: git submodule update --init --recursive && pio run
 
     - name: Building a firmware for STM32
-      run: git submodule update --init --recursive && pio run
+      run: |
+        set -e
+        docker compose build --no-cache
+        docker compose up --exit-code-from pio

@@ -27,6 +27,8 @@ constexpr const char *WHEELS_COMMAND_TOPIC_NAME = "_motors_cmd";
 constexpr const char *BATTERY_TOPIC_NAME = "battery";
 constexpr const char *SERVOS_COMMAND_TOPIC_NAME = "cmd_ser";
 
+constexpr const char *GET_CPU_ID_SERVICE_NAME = "/get_cpu_id";
+
 enum AgentStates {
     WAITING_AGENT,
     AGENT_AVAILABLE,
@@ -67,9 +69,12 @@ bool init_button_publishers();
 bool init_led_subscribers();
 bool init_param_server();
 bool init_parameters();
+bool init_services();
 
 bool publish_imu_msg(sensor_msgs__msg__Imu *imu_msg);
 bool publish_wheels_state_msg(sensor_msgs__msg__JointState *msg);
 bool publish_battery_msg(sensor_msgs__msg__BatteryState *msg);
 bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
 bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id);
+
+void get_cpu_id_service_callback(const void *request, void *response);

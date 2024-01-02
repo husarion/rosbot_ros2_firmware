@@ -1,0 +1,6 @@
+services:
+  pio:
+    build: .
+    volumes:
+      - .:/app
+    # command: tail -f /dev/null
