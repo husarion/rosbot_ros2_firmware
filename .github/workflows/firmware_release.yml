@@ -65,8 +65,8 @@ jobs:
     - name: Building a firmware for STM32
       run: |
         set -e
-        docker compose build --no-cache --exit-code-from pio
-        docker compose up
+        docker compose build --no-cache 
+        docker compose up --exit-code-from pio
 
     - name: Release a firmware
       uses: softprops/action-gh-release@v1
