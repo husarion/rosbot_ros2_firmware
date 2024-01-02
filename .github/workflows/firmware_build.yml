@@ -20,5 +20,5 @@ jobs:
     - name: Building a firmware for STM32
       run: |
         set -e
-        docker compose build --no-cache
+        docker compose build --no-cache --exit-code-from pio 
         docker compose up
