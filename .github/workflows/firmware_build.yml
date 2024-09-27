@@ -1,4 +1,4 @@
-name: Firmware release
+name: Firmware build
 on:
   pull_request:
 

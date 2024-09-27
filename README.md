@@ -151,3 +151,20 @@ Documentation:
 * https://github.com/ARMmbed/mbed-os/tree/mbed-os-5.15.6/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F407xG
 * https://docs.platformio.org/en/latest/frameworks/mbed.html
 * https://docs.platformio.org/en/latest/platforms/creating_board.html
+
+
+## Troubleshooting
+
+If you can't build even released versions, reinstall platformio:
+
+```bash
+sudo su
+pip3 uninstall platformio -y
+sudo rm -rf .pio/
+sudo rm -rf ~/.platformio/
+
+pip install platformio==6.1.11
+python3 -m venv /root/.platformio/penv/bin/activate
+
+pio run
+```
