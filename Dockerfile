@@ -9,7 +9,7 @@ RUN apt update && apt install -y \
 
 RUN pip3 install --upgrade pip setuptools
 
-RUN pip3 install -U platformio
+RUN pip3 install -U platformio==6.1.11
 
 WORKDIR /app
 
