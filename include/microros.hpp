@@ -74,7 +74,8 @@ bool init_services();
 bool publish_imu_msg(sensor_msgs__msg__Imu *imu_msg);
 bool publish_wheels_state_msg(sensor_msgs__msg__JointState *msg);
 bool publish_battery_msg(sensor_msgs__msg__BatteryState *msg);
-bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
+// bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id);
+bool publish_range_msg(sensor_msgs__msg__LaserScan *msg, uint8_t id);
 bool publish_button_msg(std_msgs__msg__Bool *msg, uint8_t id);
 
 void get_cpu_id_service_callback(const void *request, void *response);

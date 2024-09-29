@@ -148,7 +148,8 @@ bool init_range_publishers() {
         RCCHECK(rclc_publisher_init_best_effort(
             &range_pubs[i],
             &node,
-            ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
+            // ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
+            ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, LaserScan),
             range_pub_names[i]));
     }
     return true;
@@ -246,7 +247,8 @@ bool publish_battery_msg(sensor_msgs__msg__BatteryState *msg) {
     return true;
 }
 
-bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
+bool publish_range_msg(sensor_msgs__msg__LaserScan *msg, uint8_t id) {
+// bool publish_range_msg(sensor_msgs__msg__Range *msg, uint8_t id) {
     RCCHECK(rcl_publish(&range_pubs[id], msg, NULL));
     return true;
 }
